@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken'
 import { ResponseMessages } from '../constants/ResponseMessages'
 import { Team } from '../entities/team/Team'
 import { TeamMember } from '../entities/team/TeamMember'
+import { AuthenticatedRequest } from '../middleware/authenticateJWT'
+import { getAuthenticatedUserDTO } from '../dtos/user/GetAuthenticatedUserDto'
 
 /** Fonction pour valider le format de l'email
  * @param email
@@ -107,6 +109,34 @@ export const loginUser = async (req: Request, res: Response): Promise<Response> 
         return res.status(200).json({ message: ResponseMessages.loginSuccess, token })
     } catch (error) {
         console.error('Error logging in:', error)
+        return res.status(500).json({ message: ResponseMessages.internalServerError })
+    }
+}
+
+/**
+ * Retourne les infos de l'utilisateur authentifié
+ * @param req
+ * @param res
+ */
+export const getAuthenticatedUser = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<Response> => {
+    try {
+        const userId = req.user?.userId
+
+        const user = await AppDataSource.getRepository(User).findOne({
+            where: { id: userId },
+            relations: ['memberships', 'memberships.team']
+        })
+
+        if (!user) {
+            return res.status(404).json({ message: ResponseMessages.userNotFound })
+        }
+
+        return res.status(200).json(getAuthenticatedUserDTO(user))
+    } catch (error) {
+        console.error('Error fetching authenticated user:', error)
         return res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }

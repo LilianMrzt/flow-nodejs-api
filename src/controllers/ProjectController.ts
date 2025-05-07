@@ -5,7 +5,7 @@ import { AppDataSource } from '../config/connectDatabase'
 import { Response } from 'express'
 import { AuthenticatedRequest } from '../middleware/authenticateJWT'
 import { ResponseMessages } from '../constants/ResponseMessages'
-import { getCreateProjectDTO } from '../dtos/CreateProjectDto'
+import { getCreateProjectDTO } from '../dtos/projects/CreateProjectDto'
 import { findUserById, getTeamForUser } from '../services/user/UserService'
 
 /**
