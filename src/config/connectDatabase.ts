@@ -1,10 +1,10 @@
-import { DataSource } from 'typeorm';
-import dotenv from 'dotenv';
-import path from 'path';
+import { DataSource } from 'typeorm'
+import dotenv from 'dotenv'
+import path from 'path'
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env.local') })
 
-const isOffline = process.env.IS_OFFLINE === 'true';
+const isOffline = process.env.IS_OFFLINE === 'true'
 
 export const AppDataSource = new DataSource({
     type: 'postgres',
@@ -17,14 +17,14 @@ export const AppDataSource = new DataSource({
     logging: false,
     entities: ['src/entities/**/*.ts'],
     migrations: ['src/migration/**/*.ts'],
-    subscribers: ['src/subscriber/**/*.ts'],
-});
+    subscribers: ['src/subscriber/**/*.ts']
+})
 
-export const connectDatabase = async () => {
+export const connectDatabase = async (): Promise<void> => {
     try {
-        await AppDataSource.initialize();
-        console.log('Database connected successfully');
+        await AppDataSource.initialize()
+        console.log('Database connected successfully')
     } catch (error) {
-        console.error('Error connecting to the database:', error);
+        console.error('Error connecting to the database:', error)
     }
-};
+}

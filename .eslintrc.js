@@ -12,6 +12,13 @@ module.exports = {
         '@typescript-eslint',
         'import'
     ],
+    settings: {
+        'import/resolver': {
+            typescript: {
+                alwaysTryTypes: true
+            }
+        }
+    },
     extends: [
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
