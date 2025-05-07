@@ -2,11 +2,11 @@ import { ProjectMember } from '../entities/project/ProjectMember'
 import { ProjectRole } from '../constants/ProjectRole'
 import { Project } from '../entities/project/Project'
 import { AppDataSource } from '../config/connectDatabase'
-import { User } from '../entities/user/User'
 import { Response } from 'express'
 import { AuthenticatedRequest } from '../middleware/authenticateJWT'
 import { ResponseMessages } from '../constants/ResponseMessages'
 import { getCreateProjectDTO } from '../dtos/CreateProjectDto'
+import { findUserById, getTeamForUser } from '../services/user/UserService'
 
 /**
  * Crée un nouveau projet et assigne l'utilisateur authentifié en tant qu'admin
@@ -19,19 +19,14 @@ export const createProject = async (
 ): Promise<Response> => {
     try {
         const { name, description } = req.body
-        const userId = req.user?.userId
 
-        const userRepository = AppDataSource.getRepository(User)
-        const projectRepository = AppDataSource.getRepository(Project)
-
-        const user = await userRepository.findOneBy({ id: userId })
-        if (!user) {
-            return res.status(404).json({ message: ResponseMessages.userNotFound })
-        }
+        const user = await findUserById(req.user?.userId)
+        const team = await getTeamForUser(user)
 
         const project = new Project()
         project.name = name
         project.description = description
+        project.team = team
 
         const member = new ProjectMember()
         member.user = user
@@ -40,7 +35,7 @@ export const createProject = async (
 
         project.members = [member]
 
-        await projectRepository.save(project)
+        await AppDataSource.getRepository(Project).save(project)
 
         return res.status(201).json({
             message: ResponseMessages.projectCreated,
@@ -63,12 +58,15 @@ export const getProjectBySlug = async (
 ): Promise<Response> => {
     try {
         const slug = req.params.slug
+        const user = await findUserById(req.user?.userId)
+        const team = await getTeamForUser(user)
 
-        const projectRepository = AppDataSource.getRepository(Project)
-
-        const project = await projectRepository.findOne({
-            where: { slug },
-            relations: ['members', 'members.user']
+        const project = await AppDataSource.getRepository(Project).findOne({
+            where: {
+                slug,
+                team: { id: team.id }
+            },
+            relations: ['members', 'members.user', 'team']
         })
 
         if (!project) {

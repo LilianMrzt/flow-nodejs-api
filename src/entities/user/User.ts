@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm'
+import { TeamMember } from '../team/TeamMember'
 
 @Entity()
 export class User {
@@ -16,6 +17,13 @@ export class User {
 
     @Column({ nullable: true })
         lastName?: string
+
+    @OneToMany(() => {
+        return TeamMember
+    }, member => {
+        return member.user
+    })
+        memberships!: TeamMember[]
 
     @CreateDateColumn()
         createdAt!: Date

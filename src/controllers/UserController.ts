@@ -4,6 +4,8 @@ import { User } from '../entities/user/User'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { ResponseMessages } from '../constants/ResponseMessages'
+import { Team } from '../entities/team/Team'
+import { TeamMember } from '../entities/team/TeamMember'
 
 /** Fonction pour valider le format de l'email
  * @param email
@@ -55,6 +57,18 @@ export const createUser = async (req: Request, res: Response): Promise<Response>
         })
 
         await userRepository.save(newUser)
+
+        const team = new Team()
+        team.name = `${firstName || 'Default'}'s Team`
+
+        const member = new TeamMember()
+        member.user = newUser
+        member.role = 'admin'
+        member.team = team
+
+        team.members = [member]
+
+        await AppDataSource.getRepository(Team).save(team)
 
         return res.status(201).json({ message: ResponseMessages.userCreated, user: newUser })
     } catch (error) {
