@@ -3,6 +3,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import { connectDatabase } from './config/connectDatabase'
 import { createDatabase } from './config/createDatabase'
+import userRoutes from './routes/UserRoutes'
 
 const app: Application = express()
 
@@ -12,6 +13,9 @@ app.use(cors({
 }))
 
 app.use(bodyParser.json())
+
+// Routes
+app.use('/api', userRoutes)
 
 const startServer = async (): Promise<void> => {
     await createDatabase()
