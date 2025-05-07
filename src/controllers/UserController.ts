@@ -87,8 +87,7 @@ export const loginUser = async (req: Request, res: Response): Promise<Response> 
 
         const token = jwt.sign(
             { userId: user.id, email: user.email },
-            process.env.JWT_SECRET as string,
-            { expiresIn: '2h' }
+            process.env.JWT_SECRET as string
         )
 
         return res.status(200).json({ message: ResponseMessages.loginSuccess, token })
