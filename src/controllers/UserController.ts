@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
 import { AppDataSource } from '../config/connectDatabase'
-import { User } from '../entities/User'
+import { User } from '../entities/user/User'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { ResponseMessages } from '../utils/ResponseMessages'
+import { ResponseMessages } from '../constants/ResponseMessages'
 
 /** Fonction pour valider le format de l'email
  * @param email
