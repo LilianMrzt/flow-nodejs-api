@@ -12,6 +12,8 @@ import { ProjectMember } from './ProjectMember'
 import { slugify } from '../../utils/slugify'
 import { AppDataSource } from '../../config/connectDatabase'
 import { Team } from '../team/Team'
+import { BoardColumn } from '../board-column/BoardColumn '
+import { Task } from '../task/Task'
 
 @Entity()
 @Unique(['slug', 'team'])
@@ -41,6 +43,20 @@ export class Project {
         return team.projects
     })
         team!: Team
+
+    @OneToMany(() => {
+        return BoardColumn
+    }, column => {
+        return column.project
+    }, { cascade: true })
+        columns!: BoardColumn[]
+
+    @OneToMany(() => {
+        return Task
+    }, task => {
+        return task.project
+    }, { cascade: true })
+        tasks!: Task[]
 
     @CreateDateColumn()
         createdAt!: Date

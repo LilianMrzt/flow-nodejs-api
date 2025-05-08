@@ -7,6 +7,7 @@ import { AuthenticatedRequest } from '../middleware/authenticateJWT'
 import { ResponseMessages } from '../constants/ResponseMessages'
 import { getCreateProjectDTO } from '../dtos/projects/CreateProjectDto'
 import { findUserById, getTeamForUser } from '../services/user/UserService'
+import { BoardColumn } from '../entities/board-column/BoardColumn '
 
 /**
  * Crée un nouveau projet et assigne l'utilisateur authentifié en tant qu'admin
@@ -34,6 +35,21 @@ export const createProject = async (
         member.project = project
 
         project.members = [member]
+
+        const defaultColumns = [
+            { name: 'To do', color: '#FF5733' },
+            { name: 'In progress', color: '#FFC300' },
+            { name: 'Done', color: '#28B463' }
+        ]
+
+        project.columns = defaultColumns.map((col, index) => {
+            const column = new BoardColumn()
+            column.name = col.name
+            column.color = col.color
+            column.order = index
+            column.project = project
+            return column
+        })
 
         await AppDataSource.getRepository(Project).save(project)
 
@@ -66,7 +82,14 @@ export const getProjectBySlug = async (
                 slug,
                 team: { id: team.id }
             },
-            relations: ['members', 'members.user', 'team']
+            relations: [
+                'members',
+                'members.user',
+                'team',
+                'columns',
+                'tasks',
+                'columns.tasks'
+            ]
         })
 
         if (!project) {
