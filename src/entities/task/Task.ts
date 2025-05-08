@@ -25,7 +25,7 @@ export class Task {
     }, column => {
         return column.tasks
     }, { nullable: true, onDelete: 'SET NULL' })
-        column?: BoardColumn
+        column?: BoardColumn | null
 
     @CreateDateColumn()
         createdAt!: Date

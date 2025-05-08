@@ -13,5 +13,12 @@ export const ResponseMessages = {
     // Projets
     userNotFound: 'User not found.',
     projectNotFound: 'Project not found.',
-    projectCreated: 'Project successfully created.'
+    projectCreated: 'Project successfully created.',
+
+    // Colonnes
+    boardColumnNotFound: 'Board column not found.',
+
+    // Tâches
+    taskNotFound: 'Task not found.',
+    taskCreated: 'Task successfully created.'
 }

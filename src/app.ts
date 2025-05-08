@@ -5,6 +5,7 @@ import { connectDatabase } from './config/connectDatabase'
 import { createDatabase } from './config/createDatabase'
 import userRoutes from './routes/UserRoutes'
 import projectRoutes from './routes/ProjectRoutes'
+import taskRoutes from './routes/TaskRoutes'
 
 const app: Application = express()
 
@@ -18,6 +19,7 @@ app.use(bodyParser.json())
 // Routes
 app.use('/api', userRoutes)
 app.use('/api', projectRoutes)
+app.use('/api', taskRoutes)
 
 const startServer = async (): Promise<void> => {
     await createDatabase()
