@@ -7,6 +7,7 @@ export interface GetAuthenticatedUserDto {
     firstName?: string
     lastName?: string
     memberships?: MembershipDto[]
+    color?: string
 }
 
 /**
@@ -30,6 +31,7 @@ export const getAuthenticatedUserDTO = (
                     name: m.team.name
                 }
             }
-        }) ?? []
+        }) ?? [],
+        color: user.color
     }
 }

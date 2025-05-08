@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm'
 import { TeamMember } from '../team/TeamMember'
+import { getRandomColor } from '../../utils/userUtils'
 
 @Entity()
 export class User {
@@ -24,6 +25,11 @@ export class User {
         return member.user
     })
         memberships!: TeamMember[]
+
+    @Column({ default: () => {
+        return `'${getRandomColor()}'`
+    } })
+        color!: string
 
     @CreateDateColumn()
         createdAt!: Date
