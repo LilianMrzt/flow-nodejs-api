@@ -4,6 +4,8 @@ import { AppDataSource } from '../config/connectDatabase'
 import { ResponseMessages } from '../constants/ResponseMessages'
 import { Task } from '../entities/task/Task'
 import { BoardColumn } from '../entities/board-column/BoardColumn '
+import { Server } from 'socket.io'
+import { WebSocketEvents } from '../constants/WebSocketEvents'
 
 /**
  * Crée une tâche pour un projet
@@ -33,6 +35,10 @@ export const createTask = async (req: Request, res: Response): Promise<Response>
         }
 
         const savedTask = await AppDataSource.getRepository(Task).save(task)
+
+        const io = req.app.locals.io as Server
+        io.to(project.id).emit(WebSocketEvents.TASK_CREATED, savedTask)
+
         return res.status(201).json(savedTask)
     } catch (error) {
         console.error('Error creating task:', error)

@@ -6,8 +6,22 @@ import { createDatabase } from './config/createDatabase'
 import userRoutes from './routes/UserRoutes'
 import projectRoutes from './routes/ProjectRoutes'
 import taskRoutes from './routes/TaskRoutes'
+import { Server } from 'socket.io'
+import http from 'http'
+import { WebSocketEvents } from './constants/WebSocketEvents'
 
 const app: Application = express()
+
+const server = http.createServer(app)
+
+const io = new Server(server, {
+    cors: {
+        origin: process.env.REACT_APP_FRONT_BASE_URL,
+        credentials: true
+    }
+})
+
+app.locals.io = io
 
 app.use(cors({
     origin: process.env.REACT_APP_FRONT_BASE_URL,
@@ -21,11 +35,25 @@ app.use('/api', userRoutes)
 app.use('/api', projectRoutes)
 app.use('/api', taskRoutes)
 
+io.on('connection', (socket) => {
+    console.log('Client connected:', socket.id)
+
+    socket.on(WebSocketEvents.JOIN_PROJECT_ROOM, (projectId: string) => {
+        socket.join(projectId)
+        console.log(`Socket ${socket.id} joined room ${projectId}`)
+    })
+
+    socket.on(WebSocketEvents.LEAVE_PROJECT_ROOM, (projectId: string) => {
+        socket.leave(projectId)
+        console.log(`Socket ${socket.id} left room ${projectId}`)
+    })
+})
+
 const startServer = async (): Promise<void> => {
     await createDatabase()
     await connectDatabase()
     const PORT = process.env.PORT || 3001
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`)
     })
 }
