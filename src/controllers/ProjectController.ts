@@ -91,12 +91,16 @@ export const getProjectsForUser = async (
 ): Promise<Response> => {
     try {
         const userId = req.user?.userId
+        const limit = parseInt(req.query.limit as string) || 10
+        const offset = parseInt(req.query.offset as string) || 0
 
         const memberRepository = AppDataSource.getRepository(ProjectMember)
 
         const memberships = await memberRepository.find({
             where: { user: { id: userId } },
-            relations: ['project']
+            relations: ['project'],
+            skip: offset,
+            take: limit
         })
 
         const projects = memberships.map(m => {
@@ -106,6 +110,42 @@ export const getProjectsForUser = async (
         return res.status(200).json({ projects })
     } catch (error) {
         console.error('Error fetching user projects:', error)
+        return res.status(500).json({ message: ResponseMessages.internalServerError })
+    }
+}
+
+/**
+ * Récupération des 4 projets les plus recemment modifiés
+ * @param req
+ * @param res
+ */
+export const getRecentProjectsForUser = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<Response> => {
+    try {
+        const userId = req.user?.userId
+
+        const memberRepository = AppDataSource.getRepository(ProjectMember)
+
+        const memberships = await memberRepository.find({
+            where: { user: { id: userId } },
+            relations: ['project'],
+            order: {
+                project: {
+                    updatedAt: 'DESC'
+                }
+            },
+            take: 4
+        })
+
+        const projects = memberships.map(m => {
+            return m.project
+        })
+
+        return res.status(200).json({ projects })
+    } catch (error) {
+        console.error('Error fetching recent projects:', error)
         return res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
