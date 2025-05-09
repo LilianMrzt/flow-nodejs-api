@@ -19,7 +19,7 @@ export const createTask = async (
 ): Promise<Response> => {
     try {
         const { slug } = req.params
-        const { title, description, type, priority, columnId } = req.body
+        const { title, description, type, priority, columnId, assignedUser } = req.body
 
         const reporter = await findUserById(req.user?.userId)
         const project = await findProjectBySlug(slug)
@@ -31,6 +31,8 @@ export const createTask = async (
         task.priority = priority
         task.reporter = reporter
         task.project = project
+        task.column = columnId ? await findBoardColumnById(columnId) : null
+        task.assignedUser = assignedUser ? await findUserById(assignedUser) : null
 
         if (columnId) {
             task.column = await findBoardColumnById(columnId)
