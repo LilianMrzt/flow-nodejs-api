@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
 import { Project } from '../entities/project/Project'
 import { AppDataSource } from '../config/connectDatabase'
 import { ResponseMessages } from '../constants/ResponseMessages'
@@ -6,15 +6,26 @@ import { Task } from '../entities/task/Task'
 import { BoardColumn } from '../entities/board-column/BoardColumn '
 import { Server } from 'socket.io'
 import { WebSocketEvents } from '../constants/WebSocketEvents'
+import { AuthenticatedRequest } from '../middleware/authenticateJWT'
+import { User } from '../entities/user/User'
 
 /**
  * Crée une tâche pour un projet
  */
-export const createTask = async (req: Request, res: Response): Promise<Response> => {
+export const createTask = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<Response> => {
     try {
         const { slug } = req.params
 
-        const { title, description, columnId } = req.body
+        const { title, description, type, priority, columnId } = req.body
+
+        const userId = req.user?.userId
+        if (!userId) return res.status(401).json({ message: 'Unauthorized: missing user ID' })
+
+        const reporter = await AppDataSource.getRepository(User).findOneBy({ id: userId })
+        if (!reporter) return res.status(404).json({ message: 'User not found' })
 
         const project = await AppDataSource.getRepository(Project).findOne({
             where: { slug },
@@ -26,6 +37,9 @@ export const createTask = async (req: Request, res: Response): Promise<Response>
         const task = new Task()
         task.title = title
         task.description = description
+        task.type = type
+        task.priority = priority
+        task.reporter = reporter
         task.project = project
 
         if (columnId) {
