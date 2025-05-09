@@ -36,16 +36,12 @@ app.use('/api', projectRoutes)
 app.use('/api', taskRoutes)
 
 io.on('connection', (socket) => {
-    console.log('Client connected:', socket.id)
-
     socket.on(WebSocketEvents.JOIN_PROJECT_ROOM, (projectId: string) => {
         socket.join(projectId)
-        console.log(`Socket ${socket.id} joined room ${projectId}`)
     })
 
     socket.on(WebSocketEvents.LEAVE_PROJECT_ROOM, (projectId: string) => {
         socket.leave(projectId)
-        console.log(`Socket ${socket.id} left room ${projectId}`)
     })
 })
 
