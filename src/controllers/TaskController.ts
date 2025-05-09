@@ -11,6 +11,8 @@ import { User } from '../entities/user/User'
 
 /**
  * Crée une tâche pour un projet
+ * @param req
+ * @param res
  */
 export const createTask = async (
     req: AuthenticatedRequest,
@@ -56,6 +58,50 @@ export const createTask = async (
         return res.status(201).json(savedTask)
     } catch (error) {
         console.error('Error creating task:', error)
+        return res.status(500).json({ message: ResponseMessages.internalServerError })
+    }
+}
+
+/**
+ * Supprime une tâche d’un projet
+ * @param req
+ * @param res
+ */
+export const deleteTask = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<Response> => {
+    try {
+        const { slug, taskId } = req.params
+
+        const project = await AppDataSource.getRepository(Project).findOne({
+            where: { slug },
+            relations: ['team']
+        })
+
+        if (!project) {
+            return res.status(404).json({ message: ResponseMessages.projectNotFound })
+        }
+
+        const task = await AppDataSource.getRepository(Task).findOne({
+            where: { id: taskId, project: { id: project.id } },
+            relations: ['project']
+        })
+
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' })
+        }
+
+        const deletedTaskId = task.id
+
+        await AppDataSource.getRepository(Task).remove(task)
+
+        const io = req.app.locals.io as Server
+        io.to(project.id).emit(WebSocketEvents.TASK_DELETED, deletedTaskId)
+
+        return res.status(200).json({ message: 'Task deleted', taskId: task.id })
+    } catch (error) {
+        console.error('Error deleting task:', error)
         return res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
