@@ -101,3 +101,39 @@ export const getTasksByProjectSlug = async (
         return res.status(500).json({ message: 'Internal server error' })
     }
 }
+
+/**
+ * Met à jour une tache
+ * @param req
+ * @param res
+ */
+export const updateTask = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<Response> => {
+    try {
+        const { slug, taskId } = req.params
+        const { columnId, title, description, priority, type } = req.body
+
+        const project = await findProjectBySlug(slug)
+        const task = await findTaskByIdAndProject(taskId, project.id)
+
+        if (columnId !== undefined) {
+            task.column = columnId ? await findBoardColumnById(columnId) : null
+        }
+        if (title !== undefined) task.title = title
+        if (description !== undefined) task.description = description
+        if (priority !== undefined) task.priority = priority
+        if (type !== undefined) task.type = type
+
+        const updatedTask = await AppDataSource.getRepository(Task).save(task)
+
+        const io = req.app.locals.io as Server
+        io.to(project.id).emit(WebSocketEvents.TASK_UPDATED, updatedTask)
+
+        return res.status(200).json({ message: 'Task updated', task: updatedTask })
+    } catch (error) {
+        console.error('Error updating task:', error)
+        return res.status(500).json({ message: ResponseMessages.internalServerError })
+    }
+}
