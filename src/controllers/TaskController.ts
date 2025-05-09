@@ -63,14 +63,41 @@ export const deleteTask = async (
         const project = await findProjectBySlug(slug)
         const task = await findTaskByIdAndProject(taskId, project.id)
 
+        const taskIdBeforeDeletion = task.id
+
         await AppDataSource.getRepository(Task).remove(task)
 
         const io = req.app.locals.io as Server
-        io.to(project.id).emit(WebSocketEvents.TASK_DELETED, task.id)
+        io.to(project.id).emit(WebSocketEvents.TASK_DELETED, taskIdBeforeDeletion)
 
         return res.status(200).json({ message: 'Task deleted', taskId: task.id })
     } catch (error) {
         console.error('Error deleting task:', error)
         return res.status(500).json({ message: ResponseMessages.internalServerError })
+    }
+}
+
+/**
+ * Récupère les tâches d'un projet
+ * @param req
+ * @param res
+ */
+export const getTasksByProjectSlug = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<Response> => {
+    try {
+        const { slug } = req.params
+
+        const project = await findProjectBySlug(slug)
+        const tasks = await AppDataSource.getRepository(Task).find({
+            where: { project: { id: project.id } },
+            relations: ['column']
+        })
+
+        return res.status(200).json(tasks)
+    } catch (error) {
+        console.error('Error deleting task:', error)
+        return res.status(500).json({ message: 'Internal server error' })
     }
 }
