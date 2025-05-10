@@ -7,6 +7,7 @@ import { WebSocketEvents } from '../constants/WebSocketEvents'
 import { AuthenticatedRequest } from '../middleware/authenticateJWT'
 import { findUserById } from '../services/user/UserService'
 import { findBoardColumnById, findProjectBySlug, findTaskByIdAndProject } from '../services/task/TaskServices'
+import { In, IsNull } from 'typeorm'
 
 /**
  * Crée une tâche pour un projet
@@ -35,7 +36,33 @@ export const createTask = async (
         task.assignedUser = assignedUser ? await findUserById(assignedUser) : null
 
         if (columnId) {
-            task.column = await findBoardColumnById(columnId)
+            const column = await findBoardColumnById(columnId)
+            task.column = column
+
+            const maxOrderInColumn = await AppDataSource.getRepository(Task).findOne({
+                where: { column: { id: column.id } },
+                order: { orderInColumn: 'DESC' }
+            })
+
+            task.orderInColumn = maxOrderInColumn?.orderInColumn != null ? maxOrderInColumn.orderInColumn + 1 : 0
+
+            task.orderInBacklog = null
+        } else {
+            task.column = null
+
+            const maxOrderTask = await AppDataSource.getRepository(Task).findOne({
+                where: {
+                    project: { id: project.id },
+                    column: IsNull()
+                },
+                order: {
+                    orderInBacklog: 'DESC'
+                }
+            })
+
+            task.orderInBacklog = maxOrderTask?.orderInBacklog != null ? maxOrderTask.orderInBacklog + 1 : 0
+
+            task.orderInColumn = null
         }
 
         const savedTask = await AppDataSource.getRepository(Task).save(task)
@@ -136,6 +163,47 @@ export const updateTask = async (
         return res.status(200).json({ message: 'Task updated', task: updatedTask })
     } catch (error) {
         console.error('Error updating task:', error)
+        return res.status(500).json({ message: ResponseMessages.internalServerError })
+    }
+}
+
+/**
+ * Gère la réorganisation de l'ordre des éléments du backlog
+ * @param req
+ * @param res
+ */
+export const reorderBacklogTasks = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<Response> => {
+    try {
+        const { slug } = req.params
+        const { updates }: { updates: { id: string, orderInBacklog: number }[] } = req.body
+
+        const project = await findProjectBySlug(slug)
+
+        for (const update of updates) {
+            await AppDataSource.getRepository(Task).update(
+                { id: update.id, project: { id: project.id } },
+                { orderInBacklog: update.orderInBacklog }
+            )
+        }
+
+        const updatedTaskIds = updates.map(update => {
+            return update.id
+        })
+
+        const updatedTasks = await AppDataSource.getRepository(Task).find({
+            where: { id: In(updatedTaskIds) },
+            relations: ['column']
+        })
+
+        const io = req.app.locals.io as Server
+        io.to(project.id).emit(WebSocketEvents.TASKS_REORDERED, updatedTasks)
+
+        return res.status(200).json({ message: 'Backlog reordered' })
+    } catch (error) {
+        console.error('Error reordering backlog:', error)
         return res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }

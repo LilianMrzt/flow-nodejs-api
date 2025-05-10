@@ -46,6 +46,12 @@ export class Task {
     }, { nullable: true, onDelete: 'SET NULL' })
         column?: BoardColumn | null
 
+    @Column({ type: 'int', nullable: true })
+        orderInColumn?: number | null
+
+    @Column({ type: 'int', nullable: true })
+        orderInBacklog?: number | null
+
     @CreateDateColumn()
         createdAt!: Date
 

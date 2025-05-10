@@ -3,5 +3,6 @@ export const WebSocketEvents = {
     LEAVE_PROJECT_ROOM: 'leaveProjectRoom',
     TASK_CREATED: 'taskCreated',
     TASK_DELETED: 'taskDeleted',
-    TASK_UPDATED: 'taskUpdated'
+    TASK_UPDATED: 'taskUpdated',
+    TASKS_REORDERED: 'taskReordered'
 }
