@@ -4,5 +4,5 @@ export const WebSocketEvents = {
     TASK_CREATED: 'taskCreated',
     TASK_DELETED: 'taskDeleted',
     TASK_UPDATED: 'taskUpdated',
-    TASKS_REORDERED: 'taskReordered'
+    BACKLOG_TASKS_REORDERED: 'taskReordered'
 }

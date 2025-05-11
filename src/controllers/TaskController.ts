@@ -199,7 +199,7 @@ export const reorderBacklogTasks = async (
         })
 
         const io = req.app.locals.io as Server
-        io.to(project.id).emit(WebSocketEvents.TASKS_REORDERED, updatedTasks)
+        io.to(project.id).emit(WebSocketEvents.BACKLOG_TASKS_REORDERED, updatedTasks)
 
         return res.status(200).json({ message: 'Backlog reordered' })
     } catch (error) {
