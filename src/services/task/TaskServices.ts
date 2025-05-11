@@ -69,7 +69,7 @@ export const getNextOrderInColumn = async (columnId: string): Promise<number> =>
  */
 export const getNextOrderInBacklog = async (projectId: string): Promise<number> => {
     const task = await AppDataSource.getRepository(Task).findOne({
-        where: { project: { id: projectId }, column: IsNull() },
+        where: { project: { id: projectId } },
         order: { orderInBacklog: 'DESC' }
     })
     return task?.orderInBacklog != null ? task.orderInBacklog + 1 : 0

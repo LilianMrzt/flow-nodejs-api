@@ -44,12 +44,13 @@ export const createTask = async (
         task.project = project
         task.column = columnId ? await findBoardColumnById(columnId) : null
         task.assignedUser = assignedUser ? await findUserById(assignedUser) : null
+        task.orderInBacklog = await getNextOrderInBacklog(project.id)
 
         if (columnId) {
+            task.column = await findBoardColumnById(columnId)
             task.orderInColumn = await getNextOrderInColumn(columnId)
-            task.orderInBacklog = null
         } else {
-            task.orderInBacklog = await getNextOrderInBacklog(project.id)
+            task.column = null
             task.orderInColumn = null
         }
 
