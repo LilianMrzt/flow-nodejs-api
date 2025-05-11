@@ -207,3 +207,46 @@ export const reorderBacklogTasks = async (
         return res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
+
+/**
+ * Gère la réorganisation de l'ordre et des colonnes des éléments du tableau
+ * @param req
+ * @param res
+ */
+export const reorderColumnTasks = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<Response> => {
+    try {
+        const { slug } = req.params
+        const { updates }: { updates: { id: string, columnId: string | null, orderInColumn: number }[] } = req.body
+
+        const project = await findProjectBySlug(slug)
+
+        for (const update of updates) {
+            await AppDataSource.getRepository(Task).update(
+                { id: update.id, project: { id: project.id } },
+                {
+                    column: update.columnId ? await findBoardColumnById(update.columnId) : null,
+                    orderInColumn: update.orderInColumn
+                }
+            )
+        }
+
+        const updatedTaskIds = updates.map(u => {
+            return u.id
+        })
+        const updatedTasks = await AppDataSource.getRepository(Task).find({
+            where: { id: In(updatedTaskIds) },
+            relations: ['column']
+        })
+
+        const io = req.app.locals.io as Server
+        io.to(project.id).emit(WebSocketEvents.BOARD_TASKS_REORDERED, updatedTasks)
+
+        return res.status(200).json({ message: 'Column reordered' })
+    } catch (error) {
+        console.error('Error reordering column:', error)
+        return res.status(500).json({ message: ResponseMessages.internalServerError })
+    }
+}
