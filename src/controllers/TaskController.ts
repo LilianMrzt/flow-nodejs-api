@@ -222,27 +222,49 @@ export const reorderColumnTasks = async (
         const { updates }: { updates: { id: string, columnId: string | null, orderInColumn: number }[] } = req.body
 
         const project = await findProjectBySlug(slug)
+        const taskRepo = AppDataSource.getRepository(Task)
+
+        const tasksToUpdate: Task[] = []
+        const columnsToReorder = new Set<string | null>()
 
         for (const update of updates) {
-            await AppDataSource.getRepository(Task).update(
-                { id: update.id, project: { id: project.id } },
-                {
-                    column: update.columnId ? await findBoardColumnById(update.columnId) : null,
-                    orderInColumn: update.orderInColumn
-                }
-            )
+            const task = await findTaskByIdAndProject(update.id, project.id)
+            const previousColumnId = task.column?.id ?? null
+
+            if (previousColumnId !== update.columnId) {
+                columnsToReorder.add(previousColumnId)
+                columnsToReorder.add(update.columnId ?? null)
+            }
+
+            task.column = update.columnId ? await findBoardColumnById(update.columnId) : null
+            task.orderInColumn = update.columnId != null ? update.orderInColumn : null
+            tasksToUpdate.push(task)
         }
 
-        const updatedTaskIds = updates.map(u => {
-            return u.id
-        })
-        const updatedTasks = await AppDataSource.getRepository(Task).find({
-            where: { id: In(updatedTaskIds) },
-            relations: ['column']
-        })
+        await taskRepo.save(tasksToUpdate)
+
+        const reorderedTasks: Task[] = []
+
+        for (const columnId of columnsToReorder) {
+            const tasksInColumn = await taskRepo.find({
+                where: {
+                    project: { id: project.id },
+                    column: columnId === null ? IsNull() : { id: columnId }
+                },
+                order: { orderInColumn: 'ASC' },
+                relations: ['column']
+            })
+
+            for (let i = 0; i < tasksInColumn.length; i++) {
+                tasksInColumn[i].orderInColumn = i
+            }
+
+            await taskRepo.save(tasksInColumn)
+            reorderedTasks.push(...tasksInColumn)
+        }
 
         const io = req.app.locals.io as Server
-        io.to(project.id).emit(WebSocketEvents.BOARD_TASKS_REORDERED, updatedTasks)
+        io.to(project.id).emit(WebSocketEvents.BOARD_TASKS_REORDERED, reorderedTasks)
 
         return res.status(200).json({ message: 'Column reordered' })
     } catch (error) {
