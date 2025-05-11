@@ -5,9 +5,19 @@ import { Task } from '../entities/task/Task'
 import { Server } from 'socket.io'
 import { WebSocketEvents } from '../constants/WebSocketEvents'
 import { AuthenticatedRequest } from '../middleware/authenticateJWT'
-import { findUserById } from '../services/user/UserService'
-import { findBoardColumnById, findProjectBySlug, findTaskByIdAndProject } from '../services/task/TaskServices'
-import { In, IsNull } from 'typeorm'
+import {
+    findUserById
+} from '../services/user/UserService'
+import {
+    findBoardColumnById,
+    findProjectBySlug,
+    findTaskByIdAndProject,
+    getNextOrderInBacklog,
+    getNextOrderInColumn,
+    prepareColumnTasksUpdate,
+    reorderTasksInColumn
+} from '../services/task/TaskServices'
+import { In } from 'typeorm'
 
 /**
  * Crée une tâche pour un projet
@@ -36,32 +46,10 @@ export const createTask = async (
         task.assignedUser = assignedUser ? await findUserById(assignedUser) : null
 
         if (columnId) {
-            const column = await findBoardColumnById(columnId)
-            task.column = column
-
-            const maxOrderInColumn = await AppDataSource.getRepository(Task).findOne({
-                where: { column: { id: column.id } },
-                order: { orderInColumn: 'DESC' }
-            })
-
-            task.orderInColumn = maxOrderInColumn?.orderInColumn != null ? maxOrderInColumn.orderInColumn + 1 : 0
-
+            task.orderInColumn = await getNextOrderInColumn(columnId)
             task.orderInBacklog = null
         } else {
-            task.column = null
-
-            const maxOrderTask = await AppDataSource.getRepository(Task).findOne({
-                where: {
-                    project: { id: project.id },
-                    column: IsNull()
-                },
-                order: {
-                    orderInBacklog: 'DESC'
-                }
-            })
-
-            task.orderInBacklog = maxOrderTask?.orderInBacklog != null ? maxOrderTask.orderInBacklog + 1 : 0
-
+            task.orderInBacklog = await getNextOrderInBacklog(project.id)
             task.orderInColumn = null
         }
 
@@ -91,7 +79,6 @@ export const deleteTask = async (
 
         const project = await findProjectBySlug(slug)
         const task = await findTaskByIdAndProject(taskId, project.id)
-
         const taskIdBeforeDeletion = task.id
 
         await AppDataSource.getRepository(Task).remove(task)
@@ -107,7 +94,7 @@ export const deleteTask = async (
 }
 
 /**
- * Récupère les tâches d'un projet
+ * Crée une tâche pour un projet
  * @param req
  * @param res
  */
@@ -117,8 +104,8 @@ export const getTasksByProjectSlug = async (
 ): Promise<Response> => {
     try {
         const { slug } = req.params
-
         const project = await findProjectBySlug(slug)
+
         const tasks = await AppDataSource.getRepository(Task).find({
             where: { project: { id: project.id } },
             relations: ['column']
@@ -126,8 +113,8 @@ export const getTasksByProjectSlug = async (
 
         return res.status(200).json(tasks)
     } catch (error) {
-        console.error('Error deleting task:', error)
-        return res.status(500).json({ message: 'Internal server error' })
+        console.error('Error fetching tasks:', error)
+        return res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
 
@@ -192,7 +179,6 @@ export const reorderBacklogTasks = async (
         const updatedTaskIds = updates.map(update => {
             return update.id
         })
-
         const updatedTasks = await AppDataSource.getRepository(Task).find({
             where: { id: In(updatedTaskIds) },
             relations: ['column']
@@ -224,43 +210,14 @@ export const reorderColumnTasks = async (
         const project = await findProjectBySlug(slug)
         const taskRepo = AppDataSource.getRepository(Task)
 
-        const tasksToUpdate: Task[] = []
-        const columnsToReorder = new Set<string | null>()
-
-        for (const update of updates) {
-            const task = await findTaskByIdAndProject(update.id, project.id)
-            const previousColumnId = task.column?.id ?? null
-
-            if (previousColumnId !== update.columnId) {
-                columnsToReorder.add(previousColumnId)
-                columnsToReorder.add(update.columnId ?? null)
-            }
-
-            task.column = update.columnId ? await findBoardColumnById(update.columnId) : null
-            task.orderInColumn = update.columnId != null ? update.orderInColumn : null
-            tasksToUpdate.push(task)
-        }
-
+        const { tasksToUpdate, columnsToReorder } = await prepareColumnTasksUpdate(updates, project.id)
         await taskRepo.save(tasksToUpdate)
 
         const reorderedTasks: Task[] = []
 
         for (const columnId of columnsToReorder) {
-            const tasksInColumn = await taskRepo.find({
-                where: {
-                    project: { id: project.id },
-                    column: columnId === null ? IsNull() : { id: columnId }
-                },
-                order: { orderInColumn: 'ASC' },
-                relations: ['column']
-            })
-
-            for (let i = 0; i < tasksInColumn.length; i++) {
-                tasksInColumn[i].orderInColumn = i
-            }
-
-            await taskRepo.save(tasksInColumn)
-            reorderedTasks.push(...tasksInColumn)
+            const reordered = await reorderTasksInColumn(project.id, columnId)
+            reorderedTasks.push(...reordered)
         }
 
         const io = req.app.locals.io as Server
