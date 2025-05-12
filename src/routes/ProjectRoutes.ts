@@ -1,6 +1,7 @@
 import express from 'express'
 import {
     createProject,
+    deleteProject,
     getProjectBySlug,
     getProjectsForUser,
     getRecentProjectsForUser
@@ -13,5 +14,6 @@ router.post('/projects', authenticateJWT, createProject as never)
 router.get('/projects', authenticateJWT, getProjectsForUser as never)
 router.get('/projects/recent', authenticateJWT, getRecentProjectsForUser as never)
 router.get('/projects/:slug', authenticateJWT, getProjectBySlug as never)
+router.delete('/projects/:id', authenticateJWT, deleteProject as never)
 
 export default router
