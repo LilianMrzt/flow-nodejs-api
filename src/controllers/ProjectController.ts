@@ -31,7 +31,7 @@ export const createProject = async (
         project.name = name
         project.description = description
         project.team = team
-        project.key = key
+        project.key = key.toUpperCase()
 
         const member = new ProjectMember()
         member.user = user

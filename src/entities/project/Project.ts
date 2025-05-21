@@ -55,6 +55,9 @@ export class Project {
     }, { cascade: true })
         tasks!: Task[]
 
+    @Column({ type: 'int', default: 0 })
+        totalTasksNumber!: number
+
     @CreateDateColumn()
         createdAt!: Date
 

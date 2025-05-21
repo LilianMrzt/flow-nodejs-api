@@ -18,6 +18,7 @@ import {
     reorderTasksInColumn
 } from '../services/task/TaskServices'
 import { In } from 'typeorm'
+import { Project } from '../entities/project/Project'
 
 /**
  * Crée une tâche pour un projet
@@ -33,13 +34,20 @@ export const createTask = async (
         const { title, description, type, priority, columnId, assignedUser } = req.body
 
         const reporter = await findUserById(req.user?.userId)
+        const projectRepo = AppDataSource.getRepository(Project)
         const project = await findProjectByKey(slug)
+
+        project.totalTasksNumber += 1
+        await projectRepo.save(project)
+
+        const taskKey = `${project.key.toUpperCase()}-${project.totalTasksNumber}`
 
         const task = new Task()
         task.title = title
         task.description = description
         task.type = type
         task.priority = priority
+        task.key = taskKey
         task.reporter = reporter
         task.project = project
         task.column = columnId ? await findBoardColumnById(columnId) : null
