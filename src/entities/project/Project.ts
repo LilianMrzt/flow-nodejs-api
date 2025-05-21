@@ -5,18 +5,15 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     OneToMany,
-    BeforeInsert,
     Unique, ManyToOne
 } from 'typeorm'
 import { ProjectMember } from './ProjectMember'
-import { slugify } from '../../utils/slugify'
-import { AppDataSource } from '../../config/connectDatabase'
 import { Team } from '../team/Team'
 import { BoardColumn } from '../board-column/BoardColumn '
 import { Task } from '../task/Task'
 
 @Entity()
-@Unique(['slug', 'team'])
+@Unique(['key', 'team'])
 export class Project {
     @PrimaryGeneratedColumn('uuid')
         id!: string
@@ -28,7 +25,7 @@ export class Project {
         description?: string
 
     @Column()
-        slug!: string
+        key!: string
 
     @OneToMany(() => {
         return ProjectMember
@@ -63,31 +60,4 @@ export class Project {
 
     @UpdateDateColumn()
         updatedAt!: Date
-
-    @BeforeInsert()
-    async generateUniqueSlug(): Promise<void>{
-        if (!this.team) {
-            throw new Error('Cannot generate slug without a team')
-        }
-
-        const projectRepository = AppDataSource.getRepository(Project)
-        const baseSlug = slugify(this.name)
-        let slug = baseSlug
-        let i = 1
-
-        while (
-            await projectRepository.findOne({
-                where: {
-                    slug,
-                    team: { id: this.team.id }
-                },
-                relations: ['team']
-            })
-        ) {
-            slug = `${baseSlug}-${i}`
-            i++
-        }
-
-        this.slug = slug
-    }
 }

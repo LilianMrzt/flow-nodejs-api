@@ -8,6 +8,7 @@ import { ResponseMessages } from '../constants/ResponseMessages'
 import { getCreateProjectDTO } from '../dtos/projects/CreateProjectDto'
 import { findUserById, getTeamForUser } from '../services/user/UserService'
 import { BoardColumn } from '../entities/board-column/BoardColumn '
+import { validateProjectKey } from '../services/project/ProjectService'
 
 /**
  * Crée un nouveau projet et assigne l'utilisateur authentifié en tant qu'admin
@@ -19,15 +20,18 @@ export const createProject = async (
     res: Response
 ): Promise<Response> => {
     try {
-        const { name, description } = req.body
+        const { name, description, key } = req.body
 
         const user = await findUserById(req.user?.userId)
         const team = await getTeamForUser(user)
+
+        await validateProjectKey(key, team.id)
 
         const project = new Project()
         project.name = name
         project.description = description
         project.team = team
+        project.key = key
 
         const member = new ProjectMember()
         member.user = user
@@ -68,18 +72,18 @@ export const createProject = async (
  * @param req
  * @param res
  */
-export const getProjectBySlug = async (
+export const getProjectByKey = async (
     req: AuthenticatedRequest,
     res: Response
 ): Promise<Response> => {
     try {
-        const slug = req.params.slug
+        const key = req.params.key
         const user = await findUserById(req.user?.userId)
         const team = await getTeamForUser(user)
 
         const project = await AppDataSource.getRepository(Project).findOne({
             where: {
-                slug,
+                key,
                 team: { id: team.id }
             },
             relations: [

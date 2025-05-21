@@ -2,14 +2,14 @@ import { Project } from '../../entities/project/Project'
 
 export interface CreateProjectDto {
     name: string
-    slug: string
+    key: string
     description?: string
 }
 
 export const getCreateProjectDTO = (project: Project): CreateProjectDto => {
     return {
         name: project.name,
-        slug: project.slug,
+        key: project.key,
         description: project.description
     }
 }

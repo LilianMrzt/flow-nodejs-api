@@ -7,13 +7,13 @@ import { IsNull } from 'typeorm'
 
 /**
  * Récupère un projet via son slug avec ses relations associées
- * @param slug
+ * @param key
  */
-export const findProjectBySlug = async (
-    slug: string
+export const findProjectByKey = async (
+    key: string
 ): Promise<Project> => {
     const project = await AppDataSource.getRepository(Project).findOne({
-        where: { slug },
+        where: { key },
         relations: ['team']
     })
 

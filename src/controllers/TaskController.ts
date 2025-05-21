@@ -10,7 +10,7 @@ import {
 } from '../services/user/UserService'
 import {
     findBoardColumnById,
-    findProjectBySlug,
+    findProjectByKey,
     findTaskByIdAndProject,
     getNextOrderInBacklog,
     getNextOrderInColumn,
@@ -33,7 +33,7 @@ export const createTask = async (
         const { title, description, type, priority, columnId, assignedUser } = req.body
 
         const reporter = await findUserById(req.user?.userId)
-        const project = await findProjectBySlug(slug)
+        const project = await findProjectByKey(slug)
 
         const task = new Task()
         task.title = title
@@ -78,7 +78,7 @@ export const deleteTask = async (
     try {
         const { slug, taskId } = req.params
 
-        const project = await findProjectBySlug(slug)
+        const project = await findProjectByKey(slug)
         const task = await findTaskByIdAndProject(taskId, project.id)
         const taskIdBeforeDeletion = task.id
 
@@ -105,7 +105,7 @@ export const getTasksByProjectSlug = async (
 ): Promise<Response> => {
     try {
         const { slug } = req.params
-        const project = await findProjectBySlug(slug)
+        const project = await findProjectByKey(slug)
 
         const tasks = await AppDataSource.getRepository(Task).find({
             where: { project: { id: project.id } },
@@ -132,7 +132,7 @@ export const updateTask = async (
         const { slug, taskId } = req.params
         const { columnId, title, description, priority, type } = req.body
 
-        const project = await findProjectBySlug(slug)
+        const project = await findProjectByKey(slug)
         const task = await findTaskByIdAndProject(taskId, project.id)
 
         if (columnId !== undefined) {
@@ -168,7 +168,7 @@ export const reorderBacklogTasks = async (
         const { slug } = req.params
         const { updates }: { updates: { id: string, orderInBacklog: number }[] } = req.body
 
-        const project = await findProjectBySlug(slug)
+        const project = await findProjectByKey(slug)
 
         for (const update of updates) {
             await AppDataSource.getRepository(Task).update(
@@ -208,7 +208,7 @@ export const reorderColumnTasks = async (
         const { slug } = req.params
         const { updates }: { updates: { id: string, columnId: string | null, orderInColumn: number }[] } = req.body
 
-        const project = await findProjectBySlug(slug)
+        const project = await findProjectByKey(slug)
         const taskRepo = AppDataSource.getRepository(Task)
 
         const { tasksToUpdate, columnsToReorder } = await prepareColumnTasksUpdate(updates, project.id)
