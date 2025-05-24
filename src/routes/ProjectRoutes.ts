@@ -4,7 +4,7 @@ import {
     deleteProject,
     getProjectByKey,
     getProjectsForUser,
-    getRecentProjectsForUser
+    getRecentProjectsForUser, updateProject
 } from '../controllers/ProjectController'
 import { authenticateJWT } from '../middleware/authenticateJWT'
 
@@ -15,5 +15,6 @@ router.get('/projects', authenticateJWT, getProjectsForUser as never)
 router.get('/projects/recent', authenticateJWT, getRecentProjectsForUser as never)
 router.get('/projects/:key', authenticateJWT, getProjectByKey as never)
 router.delete('/projects/:id', authenticateJWT, deleteProject as never)
+router.put('/projects/:id', authenticateJWT, updateProject as never)
 
 export default router

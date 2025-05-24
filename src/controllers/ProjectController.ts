@@ -213,3 +213,52 @@ export const deleteProject = async (
         return res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
+
+/**
+ * Met à jour les informations d'un projet
+ * @param req
+ * @param res
+ */
+export const updateProject = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<Response> => {
+    try {
+        const { id } = req.params
+        const { name, description, key } = req.body
+
+        const user = await findUserById(req.user?.userId)
+        const team = await getTeamForUser(user)
+
+        const projectRepo = AppDataSource.getRepository(Project)
+
+        const project = await projectRepo.findOne({
+            where: { id, team: { id: team.id } },
+            relations: ['team']
+        })
+
+        if (!project) {
+            return res.status(404).json({ message: ResponseMessages.projectNotFound })
+        }
+
+        if (key && key !== project.key) {
+            await validateProjectKey(key, team.id)
+            project.key = key.toUpperCase()
+        }
+
+        if (name !== undefined) project.name = name
+        if (description !== undefined) project.description = description
+
+        project.updatedAt = new Date()
+
+        await projectRepo.save(project)
+
+        return res.status(200).json({
+            message: 'Project successfully updated.',
+            project
+        })
+    } catch (error) {
+        console.error('Error updating project:', error)
+        return res.status(400).json({message: ResponseMessages.internalServerError})
+    }
+}
