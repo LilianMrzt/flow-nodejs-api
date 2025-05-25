@@ -9,6 +9,7 @@ import { getCreateProjectDTO } from '../dtos/projects/CreateProjectDto'
 import { findUserById, getTeamForUser } from '../services/user/UserService'
 import { BoardColumn } from '../entities/board-column/BoardColumn '
 import { validateProjectKey } from '../services/project/ProjectService'
+import { Task } from '../entities/task/Task'
 
 /**
  * Crée un nouveau projet et assigne l'utilisateur authentifié en tant qu'admin
@@ -244,6 +245,18 @@ export const updateProject = async (
         if (key && key !== project.key) {
             await validateProjectKey(key, team.id)
             project.key = key.toUpperCase()
+
+            const taskRepo = AppDataSource.getRepository(Task)
+            const tasks = await taskRepo.find({
+                where: { project: { id: project.id } }
+            })
+
+            for (const task of tasks) {
+                const oldKeyNumber = task.key.split('-')[1]
+                task.key = `${project.key}-${oldKeyNumber}`
+            }
+
+            await taskRepo.save(tasks)
         }
 
         if (name !== undefined) project.name = name
