@@ -10,6 +10,7 @@ import { BoardColumn } from '../entities/board-column/BoardColumn '
 import { validateProjectKey } from '../services/project/ProjectService'
 import { Task } from '../entities/task/Task'
 import { getProjectSummaryDTO } from '../dtos/projects/ProjectSummaryDto'
+import { getProjectDetailsDTO } from '../dtos/projects/ProjectDetailsDto'
 
 /**
  * Crée un nouveau projet et assigne l'utilisateur authentifié en tant qu'admin
@@ -101,7 +102,7 @@ export const getProjectByKey = async (
             return res.status(404).json({ message: ResponseMessages.projectNotFound })
         }
 
-        return res.status(200).json({ project })
+        return res.status(200).json({ project: getProjectDetailsDTO(project) })
     } catch (error) {
         console.error('Error fetching project by slug:', error)
         return res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })

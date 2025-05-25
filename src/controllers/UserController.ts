@@ -7,23 +7,8 @@ import { ResponseMessages } from '../constants/ResponseMessages'
 import { Team } from '../entities/team/Team'
 import { TeamMember } from '../entities/team/TeamMember'
 import { AuthenticatedRequest } from '../middleware/authenticateJWT'
-import { getAuthenticatedUserDTO } from '../dtos/user/GetAuthenticatedUserDto'
-
-/** Fonction pour valider le format de l'email
- * @param email
- */
-const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-}
-
-/** Fonction pour valider la force du mot de passe
- * @param password
- */
-const isValidPassword = (password: string): boolean => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{10,}$/
-    return passwordRegex.test(password)
-}
+import { getAuthenticatedUserDTO } from '../dtos/user/AuthenticatedUserDto'
+import { isValidEmail, isValidPassword } from '../services/user/UserService'
 
 /**
  * Service pour créer un utilisateur

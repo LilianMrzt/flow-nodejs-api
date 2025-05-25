@@ -40,3 +40,19 @@ export const getTeamForUser = async (
 
     return teamMember.team
 }
+
+/** Fonction pour valider le format de l'email
+ * @param email
+ */
+export const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+}
+
+/** Fonction pour valider la force du mot de passe
+ * @param password
+ */
+export const isValidPassword = (password: string): boolean => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{10,}$/
+    return passwordRegex.test(password)
+}
