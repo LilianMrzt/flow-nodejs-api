@@ -103,7 +103,7 @@ export const deleteTask = async (
 }
 
 /**
- * Crée une tâche pour un projet
+ * Récupère les tâches d'un projet
  * @param req
  * @param res
  */
