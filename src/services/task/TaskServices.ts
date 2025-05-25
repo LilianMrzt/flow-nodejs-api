@@ -118,9 +118,10 @@ export const prepareColumnTasksUpdate = async (
         const task = await findTaskByIdAndProject(update.id, projectId)
         const previousColumnId = task.column?.id ?? null
 
+        columnsToReorder.add(update.columnId ?? null)
+
         if (previousColumnId !== update.columnId) {
             columnsToReorder.add(previousColumnId)
-            columnsToReorder.add(update.columnId ?? null)
         }
 
         task.column = update.columnId ? await findBoardColumnById(update.columnId) : null
