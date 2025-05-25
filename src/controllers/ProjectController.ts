@@ -5,11 +5,11 @@ import { AppDataSource } from '../config/connectDatabase'
 import { Response } from 'express'
 import { AuthenticatedRequest } from '../middleware/authenticateJWT'
 import { ResponseMessages } from '../constants/ResponseMessages'
-import { getCreateProjectDTO } from '../dtos/projects/CreateProjectDto'
 import { findUserById, getTeamForUser } from '../services/user/UserService'
 import { BoardColumn } from '../entities/board-column/BoardColumn '
 import { validateProjectKey } from '../services/project/ProjectService'
 import { Task } from '../entities/task/Task'
+import { getProjectSummaryDTO } from '../dtos/projects/ProjectSummaryDto'
 
 /**
  * Crée un nouveau projet et assigne l'utilisateur authentifié en tant qu'admin
@@ -60,7 +60,7 @@ export const createProject = async (
 
         return res.status(201).json({
             message: ResponseMessages.projectCreated,
-            project: getCreateProjectDTO(project)
+            project: getProjectSummaryDTO(project)
         })
     } catch (error) {
         console.error('Error creating project:', error)
@@ -132,7 +132,7 @@ export const getProjectsForUser = async (
         })
 
         const projects = memberships.map(m => {
-            return m.project
+            return getProjectSummaryDTO(m.project)
         })
 
         return res.status(200).json({ projects })
@@ -168,7 +168,7 @@ export const getRecentProjectsForUser = async (
         })
 
         const projects = memberships.map(m => {
-            return m.project
+            return getProjectSummaryDTO(m.project)
         })
 
         return res.status(200).json({ projects })
