@@ -63,7 +63,7 @@ export const createProject = async (
         })
     } catch (error) {
         console.error('Error creating project:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        return res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
     }
 }
 
@@ -103,7 +103,7 @@ export const getProjectByKey = async (
         return res.status(200).json({ project })
     } catch (error) {
         console.error('Error fetching project by slug:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        return res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
     }
 }
 
@@ -137,7 +137,7 @@ export const getProjectsForUser = async (
         return res.status(200).json({ projects })
     } catch (error) {
         console.error('Error fetching user projects:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        return res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
     }
 }
 
@@ -259,6 +259,6 @@ export const updateProject = async (
         })
     } catch (error) {
         console.error('Error updating project:', error)
-        return res.status(400).json({message: ResponseMessages.internalServerError})
+        return res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
     }
 }
