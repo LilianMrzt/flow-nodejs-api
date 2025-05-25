@@ -19,6 +19,8 @@ import {
 } from '../services/task/TaskServices'
 import { In } from 'typeorm'
 import { Project } from '../entities/project/Project'
+import { getTaskLightDto } from '../dtos/task/TaskLiteDto'
+import { getTaskDetailsDto } from '../dtos/task/TaskDetailsDto'
 
 /**
  * Crée une tâche pour un projet
@@ -65,9 +67,9 @@ export const createTask = async (
         const savedTask = await AppDataSource.getRepository(Task).save(task)
 
         const io = req.app.locals.io as Server
-        io.to(project.id).emit(WebSocketEvents.TASK_CREATED, savedTask)
+        io.to(project.id).emit(WebSocketEvents.TASK_CREATED, getTaskDetailsDto(savedTask))
 
-        return res.status(201).json(savedTask)
+        return res.status(201).json(getTaskDetailsDto(savedTask))
     } catch (error) {
         console.error('Error creating task:', error)
         return res.status(500).json({ message: ResponseMessages.internalServerError })
@@ -120,7 +122,7 @@ export const getTasksByProjectSlug = async (
             relations: ['column']
         })
 
-        return res.status(200).json(tasks)
+        return res.status(200).json(tasks.map(getTaskLightDto))
     } catch (error) {
         console.error('Error fetching tasks:', error)
         return res.status(500).json({ message: ResponseMessages.internalServerError })
@@ -154,9 +156,9 @@ export const updateTask = async (
         const updatedTask = await AppDataSource.getRepository(Task).save(task)
 
         const io = req.app.locals.io as Server
-        io.to(project.id).emit(WebSocketEvents.TASK_UPDATED, updatedTask)
+        io.to(project.id).emit(WebSocketEvents.TASK_UPDATED, getTaskLightDto(updatedTask))
 
-        return res.status(200).json({ message: 'Task updated', task: updatedTask })
+        return res.status(200).json({ message: 'Task updated', task: getTaskLightDto(updatedTask) })
     } catch (error) {
         console.error('Error updating task:', error)
         return res.status(500).json({ message: ResponseMessages.internalServerError })
@@ -194,7 +196,7 @@ export const reorderBacklogTasks = async (
         })
 
         const io = req.app.locals.io as Server
-        io.to(project.id).emit(WebSocketEvents.BACKLOG_TASKS_REORDERED, updatedTasks)
+        io.to(project.id).emit(WebSocketEvents.BACKLOG_TASKS_REORDERED, updatedTasks.map(getTaskLightDto))
 
         return res.status(200).json({ message: 'Backlog reordered' })
     } catch (error) {
@@ -230,7 +232,7 @@ export const reorderColumnTasks = async (
         }
 
         const io = req.app.locals.io as Server
-        io.to(project.id).emit(WebSocketEvents.BOARD_TASKS_REORDERED, reorderedTasks)
+        io.to(project.id).emit(WebSocketEvents.BOARD_TASKS_REORDERED, reorderedTasks.map(getTaskLightDto))
 
         return res.status(200).json({ message: 'Column reordered' })
     } catch (error) {
@@ -265,7 +267,7 @@ export const getTaskByKey = async (
             return res.status(404).json({ message: 'Task not found' })
         }
 
-        return res.status(200).json({ task })
+        return res.status(200).json({ task: getTaskDetailsDto(task) })
     } catch (error) {
         console.error('Error fetching task by key:', error)
         return res.status(500).json({ message: ResponseMessages.internalServerError })
