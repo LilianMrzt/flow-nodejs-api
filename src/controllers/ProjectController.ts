@@ -70,7 +70,7 @@ export const createProject = async (
 }
 
 /**
- * Récupère un projet et ses membres par slug
+ * Récupère un projet et ses membres par key
  * @param req
  * @param res
  */
@@ -104,7 +104,7 @@ export const getProjectByKey = async (
 
         return res.status(200).json({ project: getProjectDetailsDTO(project) })
     } catch (error) {
-        console.error('Error fetching project by slug:', error)
+        console.error('Error fetching project by key:', error)
         return res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
     }
 }

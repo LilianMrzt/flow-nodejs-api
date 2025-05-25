@@ -6,7 +6,7 @@ import { Task } from '../../entities/task/Task'
 import { IsNull } from 'typeorm'
 
 /**
- * Récupère un projet via son slug avec ses relations associées
+ * Récupère un projet via sa key avec ses relations associées
  * @param key
  */
 export const findProjectByKey = async (

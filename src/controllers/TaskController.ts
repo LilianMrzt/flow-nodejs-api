@@ -32,12 +32,12 @@ export const createTask = async (
     res: Response
 ): Promise<Response> => {
     try {
-        const { slug } = req.params
+        const { key } = req.params
         const { title, description, type, priority, columnId, assignedUser } = req.body
 
         const reporter = await findUserById(req.user?.userId)
         const projectRepo = AppDataSource.getRepository(Project)
-        const project = await findProjectByKey(slug)
+        const project = await findProjectByKey(key)
 
         project.totalTasksNumber += 1
         await projectRepo.save(project)
@@ -86,9 +86,9 @@ export const deleteTask = async (
     res: Response
 ): Promise<Response> => {
     try {
-        const { slug, taskId } = req.params
+        const { key, taskId } = req.params
 
-        const project = await findProjectByKey(slug)
+        const project = await findProjectByKey(key)
         const task = await findTaskByIdAndProject(taskId, project.id)
         const taskIdBeforeDeletion = task.id
 
@@ -109,13 +109,13 @@ export const deleteTask = async (
  * @param req
  * @param res
  */
-export const getTasksByProjectSlug = async (
+export const getTasksByProjectKey = async (
     req: AuthenticatedRequest,
     res: Response
 ): Promise<Response> => {
     try {
-        const { slug } = req.params
-        const project = await findProjectByKey(slug)
+        const { key } = req.params
+        const project = await findProjectByKey(key)
 
         const tasks = await AppDataSource.getRepository(Task).find({
             where: { project: { id: project.id } },
@@ -139,10 +139,10 @@ export const updateTask = async (
     res: Response
 ): Promise<Response> => {
     try {
-        const { slug, taskId } = req.params
+        const { key, taskId } = req.params
         const { columnId, title, description, priority, type } = req.body
 
-        const project = await findProjectByKey(slug)
+        const project = await findProjectByKey(key)
         const task = await findTaskByIdAndProject(taskId, project.id)
 
         if (columnId !== undefined) {
@@ -175,10 +175,10 @@ export const reorderBacklogTasks = async (
     res: Response
 ): Promise<Response> => {
     try {
-        const { slug } = req.params
+        const { key } = req.params
         const { updates }: { updates: { id: string, orderInBacklog: number }[] } = req.body
 
-        const project = await findProjectByKey(slug)
+        const project = await findProjectByKey(key)
 
         for (const update of updates) {
             await AppDataSource.getRepository(Task).update(
@@ -215,10 +215,10 @@ export const reorderColumnTasks = async (
     res: Response
 ): Promise<Response> => {
     try {
-        const { slug } = req.params
+        const { key } = req.params
         const { updates }: { updates: { id: string, columnId: string | null, orderInColumn: number }[] } = req.body
 
-        const project = await findProjectByKey(slug)
+        const project = await findProjectByKey(key)
         const taskRepo = AppDataSource.getRepository(Task)
 
         const { tasksToUpdate, columnsToReorder } = await prepareColumnTasksUpdate(updates, project.id)
@@ -251,9 +251,9 @@ export const getTaskByKey = async (
     res: Response
 ): Promise<Response> => {
     try {
-        const { slug, taskKey } = req.params
+        const { key, taskKey } = req.params
 
-        const project = await findProjectByKey(slug)
+        const project = await findProjectByKey(key)
 
         const task = await AppDataSource.getRepository(Task).findOne({
             where: {
