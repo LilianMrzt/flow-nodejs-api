@@ -142,6 +142,10 @@ export const updateTask = async (
         const { key, taskId } = req.params
         const { columnId, title, description, priority, type } = req.body
 
+        if (title !== undefined && (title === null || title.trim() === '')) {
+            return res.status(400).json({ message: 'Task title cannot be empty.' })
+        }
+
         const project = await findProjectByKey(key)
         const task = await findTaskByIdAndProject(taskId, project.id)
 
