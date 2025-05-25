@@ -158,7 +158,7 @@ export const updateTask = async (
         const io = req.app.locals.io as Server
         io.to(project.id).emit(WebSocketEvents.TASK_UPDATED, getTaskLightDto(updatedTask))
 
-        return res.status(200).json({ message: 'Task updated', task: getTaskLightDto(updatedTask) })
+        return res.status(200).json({ message: 'Task updated', task: getTaskDetailsDto(updatedTask) })
     } catch (error) {
         console.error('Error updating task:', error)
         return res.status(500).json({ message: ResponseMessages.internalServerError })
