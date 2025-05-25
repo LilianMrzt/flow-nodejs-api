@@ -1,7 +1,6 @@
 import { Project } from '../../entities/project/Project'
 import { getProjectMemberDto, ProjectMemberDto } from './ProjectMemberDto'
 import { BoardColumn } from '../../entities/board-column/BoardColumn '
-import { Task } from '../../entities/task/Task'
 
 export interface ProjectDetailsDto {
     id: string
@@ -13,7 +12,6 @@ export interface ProjectDetailsDto {
     totalTasksNumber: number
     members: ProjectMemberDto[]
     columns: BoardColumn[]
-    tasks: Task[]
 }
 
 export const getProjectDetailsDTO = (project: Project): ProjectDetailsDto => {
@@ -26,7 +24,6 @@ export const getProjectDetailsDTO = (project: Project): ProjectDetailsDto => {
         updatedAt: project.updatedAt,
         totalTasksNumber: project.totalTasksNumber,
         members: project.members.map(getProjectMemberDto),
-        columns: project.columns,
-        tasks: project.tasks
+        columns: project.columns
     }
 }
