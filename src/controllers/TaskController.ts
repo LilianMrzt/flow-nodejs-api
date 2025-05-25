@@ -238,3 +238,36 @@ export const reorderColumnTasks = async (
         return res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
+
+/**
+ * Récupère une tâche par sa clé (key) dans un projet
+ * @param req
+ * @param res
+ */
+export const getTaskByKey = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<Response> => {
+    try {
+        const { slug, taskKey } = req.params
+
+        const project = await findProjectByKey(slug)
+
+        const task = await AppDataSource.getRepository(Task).findOne({
+            where: {
+                key: taskKey,
+                project: { id: project.id }
+            },
+            relations: ['column', 'reporter', 'assignedUser']
+        })
+
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' })
+        }
+
+        return res.status(200).json({ task })
+    } catch (error) {
+        console.error('Error fetching task by key:', error)
+        return res.status(500).json({ message: ResponseMessages.internalServerError })
+    }
+}

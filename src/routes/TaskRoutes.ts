@@ -1,7 +1,7 @@
 import express from 'express'
 import {
     createTask,
-    deleteTask,
+    deleteTask, getTaskByKey,
     getTasksByProjectSlug,
     reorderBacklogTasks,
     reorderColumnTasks,
@@ -17,5 +17,6 @@ router.get('/projects/:slug/tasks', authenticateJWT, getTasksByProjectSlug as ne
 router.patch('/projects/:slug/tasks/reorder-backlog', authenticateJWT, reorderBacklogTasks as never)
 router.patch('/projects/:slug/tasks/reorder-column', authenticateJWT, reorderColumnTasks as never)
 router.patch('/projects/:slug/tasks/:taskId', authenticateJWT, updateTask as never)
+router.get('/projects/:slug/tasks/:taskKey', authenticateJWT, getTaskByKey as never)
 
 export default router
