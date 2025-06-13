@@ -33,7 +33,7 @@ export const forgotPasswordService = async (
 
     const resetUrl = `${process.env.REACT_APP_FRONT_BASE_URL}/auth/reset-password?token=${token}`
 
-    await sendResetPasswordEmail(user.email, resetUrl)
+    await sendResetPasswordEmail(user, resetUrl)
 }
 
 /**
