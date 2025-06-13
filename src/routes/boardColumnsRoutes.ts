@@ -4,6 +4,6 @@ import { authenticateJWT } from '@middleware/authenticateJWT'
 
 const router = Router()
 
-router.get('/projects/:key/columns', authenticateJWT, getColumnsByProjectKey as never)
+router.get('/projects/:key/columns', authenticateJWT, getColumnsByProjectKey)
 
 export default router

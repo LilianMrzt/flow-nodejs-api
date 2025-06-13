@@ -21,7 +21,7 @@ import { getAuthenticatedUserService } from '@services/user/userAuthService'
 export const createProject = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { name, description, key } = req.body
 
@@ -60,13 +60,13 @@ export const createProject = async (
 
         await AppDataSource.getRepository(Project).save(project)
 
-        return res.status(201).json({
+        res.status(201).json({
             message: ResponseMessages.projectCreated,
             project: getProjectSummaryDTO(project)
         })
     } catch (error) {
         console.error('Error creating project:', error)
-        return res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
+        res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
     }
 }
 
@@ -78,7 +78,7 @@ export const createProject = async (
 export const getProjectByKey = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const key = req.params.key
         const user = await getAuthenticatedUserService(req)
@@ -100,13 +100,14 @@ export const getProjectByKey = async (
         })
 
         if (!project) {
-            return res.status(404).json({ message: ResponseMessages.projectNotFound })
+            res.status(404).json({ message: ResponseMessages.projectNotFound })
+            return
         }
 
-        return res.status(200).json({ project: getProjectDetailsDTO(project) })
+        res.status(200).json({ project: getProjectDetailsDTO(project) })
     } catch (error) {
         console.error('Error fetching project by key:', error)
-        return res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
+        res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
     }
 }
 
@@ -118,7 +119,7 @@ export const getProjectByKey = async (
 export const getProjectsForUser = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const user = await getAuthenticatedUserService(req)
         const limit = parseInt(req.query.limit as string) || 10
@@ -137,10 +138,10 @@ export const getProjectsForUser = async (
             return getProjectSummaryDTO(m.project)
         })
 
-        return res.status(200).json({ projects })
+        res.status(200).json({ projects })
     } catch (error) {
         console.error('Error fetching user projects:', error)
-        return res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
+        res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
     }
 }
 
@@ -152,7 +153,7 @@ export const getProjectsForUser = async (
 export const getRecentProjectsForUser = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const user = await getAuthenticatedUserService(req)
 
@@ -173,10 +174,10 @@ export const getRecentProjectsForUser = async (
             return getProjectSummaryDTO(m.project)
         })
 
-        return res.status(200).json({ projects })
+        res.status(200).json({ projects })
     } catch (error) {
         console.error('Error fetching recent projects:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
 
@@ -188,7 +189,7 @@ export const getRecentProjectsForUser = async (
 export const deleteProject = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { id } = req.params
 
@@ -205,15 +206,16 @@ export const deleteProject = async (
         })
 
         if (!project) {
-            return res.status(404).json({ message: ResponseMessages.projectNotFound })
+            res.status(404).json({ message: ResponseMessages.projectNotFound })
+            return
         }
 
         await projectRepo.remove(project)
 
-        return res.status(200).json({ message: 'Project successfully deleted.' })
+        res.status(200).json({ message: 'Project successfully deleted.' })
     } catch (error) {
         console.error('Error deleting project by ID:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
 
@@ -225,7 +227,7 @@ export const deleteProject = async (
 export const updateProject = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { id } = req.params
         const { name, description, key } = req.body
@@ -241,7 +243,8 @@ export const updateProject = async (
         })
 
         if (!project) {
-            return res.status(404).json({ message: ResponseMessages.projectNotFound })
+            res.status(404).json({ message: ResponseMessages.projectNotFound })
+            return
         }
 
         if (key && key !== project.key) {
@@ -268,12 +271,12 @@ export const updateProject = async (
 
         await projectRepo.save(project)
 
-        return res.status(200).json({
+        res.status(200).json({
             message: 'Project successfully updated.',
             project
         })
     } catch (error) {
         console.error('Error updating project:', error)
-        return res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
+        res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
     }
 }

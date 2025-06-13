@@ -10,11 +10,11 @@ import { authenticateJWT } from '@middleware/authenticateJWT'
 
 const router = express.Router()
 
-router.post('/projects', authenticateJWT, createProject as never)
-router.get('/projects', authenticateJWT, getProjectsForUser as never)
-router.get('/projects/recent', authenticateJWT, getRecentProjectsForUser as never)
-router.get('/projects/:key', authenticateJWT, getProjectByKey as never)
-router.delete('/projects/:id', authenticateJWT, deleteProject as never)
-router.put('/projects/:id', authenticateJWT, updateProject as never)
+router.post('/projects', authenticateJWT, createProject)
+router.get('/projects', authenticateJWT, getProjectsForUser)
+router.get('/projects/recent', authenticateJWT, getRecentProjectsForUser)
+router.get('/projects/:key', authenticateJWT, getProjectByKey)
+router.delete('/projects/:id', authenticateJWT, deleteProject)
+router.put('/projects/:id', authenticateJWT, updateProject)
 
 export default router

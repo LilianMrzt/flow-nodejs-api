@@ -31,7 +31,7 @@ import { getAuthenticatedUserService } from '@services/user/userAuthService'
 export const createTask = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { key } = req.params
         const { title, description, type, priority, columnId, assignedUser } = req.body
@@ -70,10 +70,10 @@ export const createTask = async (
         const io = req.app.locals.io as Server
         io.to(project.id).emit(WebSocketEvents.TASK_CREATED, getTaskDetailsDto(savedTask))
 
-        return res.status(201).json(getTaskDetailsDto(savedTask))
+        res.status(201).json(getTaskDetailsDto(savedTask))
     } catch (error) {
         console.error('Error creating task:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
 
@@ -85,7 +85,7 @@ export const createTask = async (
 export const deleteTask = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { key, taskId } = req.params
 
@@ -98,10 +98,10 @@ export const deleteTask = async (
         const io = req.app.locals.io as Server
         io.to(project.id).emit(WebSocketEvents.TASK_DELETED, taskIdBeforeDeletion)
 
-        return res.status(200).json({ message: 'Task deleted', taskId: task.id })
+        res.status(200).json({ message: 'Task deleted', taskId: task.id })
     } catch (error) {
         console.error('Error deleting task:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
 
@@ -113,7 +113,7 @@ export const deleteTask = async (
 export const getTasksByProjectKey = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { key } = req.params
         const project = await findProjectByKey(key)
@@ -123,10 +123,10 @@ export const getTasksByProjectKey = async (
             relations: ['column']
         })
 
-        return res.status(200).json(tasks.map(getTaskLightDto))
+        res.status(200).json(tasks.map(getTaskLightDto))
     } catch (error) {
         console.error('Error fetching tasks:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
 
@@ -138,13 +138,14 @@ export const getTasksByProjectKey = async (
 export const updateTask = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { key, taskId } = req.params
         const { columnId, title, description, priority, type } = req.body
 
         if (title !== undefined && (title === null || title.trim() === '')) {
-            return res.status(400).json({ message: 'Task title cannot be empty.' })
+            res.status(400).json({ message: 'Task title cannot be empty.' })
+            return
         }
 
         const project = await findProjectByKey(key)
@@ -163,10 +164,10 @@ export const updateTask = async (
         const io = req.app.locals.io as Server
         io.to(project.id).emit(WebSocketEvents.TASK_UPDATED, getTaskLightDto(updatedTask))
 
-        return res.status(200).json({ message: 'Task updated', task: getTaskDetailsDto(updatedTask) })
+        res.status(200).json({ message: 'Task updated', task: getTaskDetailsDto(updatedTask) })
     } catch (error) {
         console.error('Error updating task:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
 
@@ -178,7 +179,7 @@ export const updateTask = async (
 export const reorderBacklogTasks = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { key } = req.params
         const { updates }: { updates: { id: string, orderInBacklog: number }[] } = req.body
@@ -203,10 +204,10 @@ export const reorderBacklogTasks = async (
         const io = req.app.locals.io as Server
         io.to(project.id).emit(WebSocketEvents.BACKLOG_TASKS_REORDERED, updatedTasks.map(getTaskLightDto))
 
-        return res.status(200).json({ message: 'Backlog reordered' })
+        res.status(200).json({ message: 'Backlog reordered' })
     } catch (error) {
         console.error('Error reordering backlog:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
 
@@ -218,7 +219,7 @@ export const reorderBacklogTasks = async (
 export const reorderColumnTasks = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { key } = req.params
         const { updates }: { updates: { id: string, columnId: string | null, orderInColumn: number }[] } = req.body
@@ -239,10 +240,10 @@ export const reorderColumnTasks = async (
         const io = req.app.locals.io as Server
         io.to(project.id).emit(WebSocketEvents.BOARD_TASKS_REORDERED, reorderedTasks.map(getTaskLightDto))
 
-        return res.status(200).json({ message: 'Column reordered' })
+        res.status(200).json({ message: 'Column reordered' })
     } catch (error) {
         console.error('Error reordering column:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }
 
@@ -254,7 +255,7 @@ export const reorderColumnTasks = async (
 export const getTaskByKey = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { key, taskKey } = req.params
 
@@ -269,12 +270,13 @@ export const getTaskByKey = async (
         })
 
         if (!task) {
-            return res.status(404).json({ message: 'Task not found' })
+            res.status(404).json({ message: 'Task not found' })
+            return
         }
 
-        return res.status(200).json({ task: getTaskDetailsDto(task) })
+        res.status(200).json({ task: getTaskDetailsDto(task) })
     } catch (error) {
         console.error('Error fetching task by key:', error)
-        return res.status(500).json({ message: ResponseMessages.internalServerError })
+        res.status(500).json({ message: ResponseMessages.internalServerError })
     }
 }

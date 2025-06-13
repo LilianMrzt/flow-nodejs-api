@@ -13,13 +13,14 @@ import { findProjectByKey } from '@services/task/TaskServices'
 export const getColumnsByProjectKey = async (
     req: AuthenticatedRequest,
     res: Response
-): Promise<Response> => {
+): Promise<void> => {
     try {
         const { key } = req.params
         const project = await findProjectByKey(key)
 
         if (!project) {
-            return res.status(404).json({ message: 'Project not found' })
+            res.status(404).json({ message: 'Project not found' })
+            return
         }
 
         const columns = await AppDataSource.getRepository(BoardColumn).find({
@@ -27,11 +28,11 @@ export const getColumnsByProjectKey = async (
             order: { order: 'ASC' }
         })
 
-        return res.status(200).json({
+        res.status(200).json({
             columns: columns.map(getBoardColumnDto)
         })
     } catch (error) {
         console.error('Error fetching columns:', error)
-        return res.status(500).json({ message: 'Internal server error' })
+        res.status(500).json({ message: 'Internal server error' })
     }
 }
