@@ -1,6 +1,6 @@
 import express from 'express'
-import { createUser, getAuthenticatedUser, loginUser } from '../controllers/UserController'
-import { authenticateJWT } from '../middleware/authenticateJWT'
+import { createUser, getAuthenticatedUser, loginUser } from '@controllers/UserController'
+import { authenticateJWT } from '@middleware/authenticateJWT'
 
 const router = express.Router()
 

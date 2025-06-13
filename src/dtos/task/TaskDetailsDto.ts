@@ -1,6 +1,6 @@
-import { BoardColumnDto, getBoardColumnDto } from '../board-column/BoardColumnDto'
-import { getUserSummaryDto, UserSummaryDto } from '../user/UserSummaryDto'
-import { Task } from '../../entities/task/Task'
+import { BoardColumnDto, getBoardColumnDto } from '@dtos/board-column/BoardColumnDto'
+import { getUserSummaryDto, UserSummaryDto } from '@dtos/user/UserSummaryDto'
+import { Task } from '@entities/task/Task'
 
 export interface TaskDetailsDto {
     id: string

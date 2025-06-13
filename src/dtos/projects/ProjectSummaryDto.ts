@@ -1,4 +1,4 @@
-import { Project } from '../../entities/project/Project'
+import { Project } from '@entities/project/Project'
 
 export interface ProjectSummaryDto {
     id: string

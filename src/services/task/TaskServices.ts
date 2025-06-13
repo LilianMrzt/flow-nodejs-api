@@ -1,8 +1,8 @@
-import { AppDataSource } from '../../config/connectDatabase'
-import { ResponseMessages } from '../../constants/ResponseMessages'
-import { BoardColumn } from '../../entities/board-column/BoardColumn '
-import { Project } from '../../entities/project/Project'
-import { Task } from '../../entities/task/Task'
+import { AppDataSource } from '@config/connectDatabase'
+import { ResponseMessages } from '@constants/ResponseMessages'
+import { BoardColumn } from '@entities/board-column/BoardColumn '
+import { Project } from '@entities/project/Project'
+import { Task } from '@entities/task/Task'
 import { IsNull } from 'typeorm'
 
 /**

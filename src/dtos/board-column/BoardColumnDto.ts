@@ -1,4 +1,4 @@
-import { BoardColumn } from '../../entities/board-column/BoardColumn '
+import { BoardColumn } from '@entities/board-column/BoardColumn '
 
 export interface BoardColumnDto {
     id: string

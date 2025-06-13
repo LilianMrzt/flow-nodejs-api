@@ -1,15 +1,15 @@
 import express, { Application } from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
-import { connectDatabase } from './config/connectDatabase'
-import { createDatabase } from './config/createDatabase'
-import userRoutes from './routes/UserRoutes'
-import projectRoutes from './routes/ProjectRoutes'
-import taskRoutes from './routes/TaskRoutes'
+import { connectDatabase } from '@config/connectDatabase'
+import { createDatabase } from '@config/createDatabase'
+import userRoutes from '@routes/UserRoutes'
+import projectRoutes from '@routes/ProjectRoutes'
+import taskRoutes from '@routes/TaskRoutes'
 import { Server } from 'socket.io'
 import http from 'http'
-import { WebSocketEvents } from './constants/WebSocketEvents'
-import boardColumnsRoutes from './routes/boardColumnsRoutes'
+import { WebSocketEvents } from '@constants/WebSocketEvents'
+import boardColumnsRoutes from '@routes/boardColumnsRoutes'
 
 const app: Application = express()
 

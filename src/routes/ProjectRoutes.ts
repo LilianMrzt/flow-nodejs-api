@@ -5,8 +5,8 @@ import {
     getProjectByKey,
     getProjectsForUser,
     getRecentProjectsForUser, updateProject
-} from '../controllers/ProjectController'
-import { authenticateJWT } from '../middleware/authenticateJWT'
+} from '@controllers/ProjectController'
+import { authenticateJWT } from '@middleware/authenticateJWT'
 
 const router = express.Router()
 

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm'
-import { TeamMember } from '../team/TeamMember'
-import { getRandomColor } from '../../utils/userUtils'
+import { TeamMember } from '@entities/team/TeamMember'
+import { getRandomColor } from '@utils/userUtils'
 
 @Entity()
 export class User {

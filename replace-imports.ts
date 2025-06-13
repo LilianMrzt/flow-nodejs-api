@@ -1,7 +1,7 @@
 import { Project } from 'ts-morph'
 import path from 'path'
 
-// Ton alias config
+// Alias map
 const aliasMap: Record<string, string> = {
     '@src': './src',
     '@config': './src/config',
@@ -23,24 +23,38 @@ const project = new Project({
 
 const sourceFiles = project.getSourceFiles('src/**/*.{ts,tsx}')
 
+// Résolution absolue de chaque alias
+const resolvedAliasMap = Object.entries(aliasMap)
+    .map(([alias, relPath]) => {
+        const absPath = path.resolve(relPath)
+        return { alias, absPath }
+    })
+    // trie les alias du plus spécifique (long) au plus général
+    .sort((a, b) => {
+        return b.absPath.length - a.absPath.length
+    })
+
 for (const sourceFile of sourceFiles) {
     let changed = false
 
     for (const importDecl of sourceFile.getImportDeclarations()) {
         const importPath = importDecl.getModuleSpecifierValue()
 
+        // Ne modifie que les chemins relatifs
         if (importPath.startsWith('.')) {
-            const absPath = path.resolve(path.dirname(sourceFile.getFilePath()), importPath)
+            const absImportPath = path.resolve(path.dirname(sourceFile.getFilePath()), importPath)
 
-            for (const [alias, targetPath] of Object.entries(aliasMap)) {
-                const absTarget = path.resolve(targetPath)
+            // Cherche le match le plus spécifique
+            const match = resolvedAliasMap.find(({ absPath }) => {
+                return absImportPath.startsWith(absPath)
+            }
+            )
 
-                if (absPath.startsWith(absTarget)) {
-                    const newPath = alias + absPath.slice(absTarget.length).replace(/\\/g, '/')
-                    importDecl.setModuleSpecifier(newPath)
-                    changed = true
-                    break
-                }
+            if (match) {
+                const relativePart = absImportPath.slice(match.absPath.length).replace(/\\/g, '/')
+                const newPath = match.alias + relativePart
+                importDecl.setModuleSpecifier(newPath)
+                changed = true
             }
         }
     }

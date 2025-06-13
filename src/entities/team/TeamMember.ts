@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { Team } from './Team'
-import { User } from '../user/User'
+import { Team } from '@entities/team/Team'
+import { User } from '@entities/user/User'
 
 @Entity()
 export class TeamMember {

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { ResponseMessages } from '../constants/ResponseMessages'
+import { ResponseMessages } from '@constants/ResponseMessages'
 
 /**
  * Interface représentant le contenu attendu dans le token JWT

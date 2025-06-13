@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
-import { Project } from '../project/Project'
-import { TeamMember } from './TeamMember'
+import { Project } from '@entities/project/Project'
+import { TeamMember } from '@entities/team/TeamMember'
 
 @Entity()
 export class Team {

@@ -1,5 +1,5 @@
-import { AppDataSource } from '../../config/connectDatabase'
-import { Project } from '../../entities/project/Project'
+import { AppDataSource } from '@config/connectDatabase'
+import { Project } from '@entities/project/Project'
 
 /**
  * Vérifie que la clé est valide et unique pour l'équipe donnée

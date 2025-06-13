@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
-import { ResponseMessages } from '../constants/ResponseMessages'
-import { AuthenticatedRequest } from '../middleware/authenticateJWT'
-import { getAuthenticatedUserDTO } from '../dtos/user/AuthenticatedUserDto'
-import { UserLoginDto } from '../dtos/user/UserLoginDto'
-import { getAuthenticatedUserService, loginUserService, registerUserService } from '../services/user/userAuthService'
-import { UserRegisterDto } from '../dtos/user/UserRegisterDto'
+import { ResponseMessages } from '@constants/ResponseMessages'
+import { AuthenticatedRequest } from '@middleware/authenticateJWT'
+import { getAuthenticatedUserDTO } from '@dtos/user/AuthenticatedUserDto'
+import { UserLoginDto } from '@dtos/user/UserLoginDto'
+import { getAuthenticatedUserService, loginUserService, registerUserService } from '@services/user/userAuthService'
+import { UserRegisterDto } from '@dtos/user/UserRegisterDto'
 
 /**
  * Service pour créer un utilisateur

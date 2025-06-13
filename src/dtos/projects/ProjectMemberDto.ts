@@ -1,5 +1,5 @@
-import { ProjectMember } from '../../entities/project/ProjectMember'
-import { UserSummaryDto } from '../user/UserSummaryDto'
+import { ProjectMember } from '@entities/project/ProjectMember'
+import { UserSummaryDto } from '@dtos/user/UserSummaryDto'
 
 export interface ProjectMemberDto {
     id: string

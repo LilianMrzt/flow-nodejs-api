@@ -1,4 +1,4 @@
-import { TeamMember } from '../../entities/team/TeamMember'
+import { TeamMember } from '@entities/team/TeamMember'
 
 export interface MembershipDto {
     id: string

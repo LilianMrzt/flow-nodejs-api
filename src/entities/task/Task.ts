@@ -1,9 +1,9 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
-import { Project } from '../project/Project'
-import { BoardColumn } from '../board-column/BoardColumn '
-import { TaskPriority } from '../../constants/tasks/TaskPriority'
-import { User } from '../user/User'
-import { TaskType } from '../../constants/tasks/TaskType'
+import { Project } from '@entities/project/Project'
+import { BoardColumn } from '@entities/board-column/BoardColumn '
+import { TaskPriority } from '@constants/tasks/TaskPriority'
+import { User } from '@entities/user/User'
+import { TaskType } from '@constants/tasks/TaskType'
 
 @Entity()
 export class Task {

@@ -1,7 +1,7 @@
-import { User } from '../../entities/user/User'
-import { AppDataSource } from '../../config/connectDatabase'
-import { TeamMember } from '../../entities/team/TeamMember'
-import { Team } from '../../entities/team/Team'
+import { User } from '@entities/user/User'
+import { AppDataSource } from '@config/connectDatabase'
+import { TeamMember } from '@entities/team/TeamMember'
+import { Team } from '@entities/team/Team'
 
 /**
  * Récupère un utilisateur par ID

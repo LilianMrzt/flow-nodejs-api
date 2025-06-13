@@ -1,6 +1,6 @@
-import { Project } from '../../entities/project/Project'
-import { getProjectMemberDto, ProjectMemberDto } from './ProjectMemberDto'
-import { BoardColumn } from '../../entities/board-column/BoardColumn '
+import { Project } from '@entities/project/Project'
+import { getProjectMemberDto, ProjectMemberDto } from '@dtos/projects/ProjectMemberDto'
+import { BoardColumn } from '@entities/board-column/BoardColumn '
 
 export interface ProjectDetailsDto {
     id: string

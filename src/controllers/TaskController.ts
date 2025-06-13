@@ -1,13 +1,13 @@
 import { Response } from 'express'
-import { AppDataSource } from '../config/connectDatabase'
-import { ResponseMessages } from '../constants/ResponseMessages'
-import { Task } from '../entities/task/Task'
+import { AppDataSource } from '@config/connectDatabase'
+import { ResponseMessages } from '@constants/ResponseMessages'
+import { Task } from '@entities/task/Task'
 import { Server } from 'socket.io'
-import { WebSocketEvents } from '../constants/WebSocketEvents'
-import { AuthenticatedRequest } from '../middleware/authenticateJWT'
+import { WebSocketEvents } from '@constants/WebSocketEvents'
+import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import {
     findUserById
-} from '../services/user/UserService'
+} from '@services/user/UserService'
 import {
     findBoardColumnById,
     findProjectByKey,
@@ -16,12 +16,12 @@ import {
     getNextOrderInColumn,
     prepareColumnTasksUpdate,
     reorderTasksInColumn
-} from '../services/task/TaskServices'
+} from '@services/task/TaskServices'
 import { In } from 'typeorm'
-import { Project } from '../entities/project/Project'
-import { getTaskLightDto } from '../dtos/task/TaskLiteDto'
-import { getTaskDetailsDto } from '../dtos/task/TaskDetailsDto'
-import { getAuthenticatedUserService } from '../services/user/userAuthService'
+import { Project } from '@entities/project/Project'
+import { getTaskLightDto } from '@dtos/task/TaskLiteDto'
+import { getTaskDetailsDto } from '@dtos/task/TaskDetailsDto'
+import { getAuthenticatedUserService } from '@services/user/userAuthService'
 
 /**
  * Crée une tâche pour un projet

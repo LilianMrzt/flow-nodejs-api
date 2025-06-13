@@ -1,4 +1,4 @@
-import { AuthenticatedUserDto } from './AuthenticatedUserDto'
+import { AuthenticatedUserDto } from '@dtos/user/AuthenticatedUserDto'
 
 export interface LoginUserResult {
     token: string

@@ -1,5 +1,5 @@
-import { User } from '../../entities/user/User'
-import { getMembershipDto, MembershipDto } from '../team/MembershipDto'
+import { User } from '@entities/user/User'
+import { getMembershipDto, MembershipDto } from '@dtos/team/MembershipDto'
 
 export interface AuthenticatedUserDto {
     id: string

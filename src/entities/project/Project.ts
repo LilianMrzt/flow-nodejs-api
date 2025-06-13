@@ -7,10 +7,10 @@ import {
     OneToMany,
     Unique, ManyToOne
 } from 'typeorm'
-import { ProjectMember } from './ProjectMember'
-import { Team } from '../team/Team'
-import { BoardColumn } from '../board-column/BoardColumn '
-import { Task } from '../task/Task'
+import { ProjectMember } from '@entities/project/ProjectMember'
+import { Team } from '@entities/team/Team'
+import { BoardColumn } from '@entities/board-column/BoardColumn '
+import { Task } from '@entities/task/Task'
 
 @Entity()
 @Unique(['key', 'team'])

@@ -5,9 +5,9 @@ import {
     Column,
     Unique
 } from 'typeorm'
-import { Project } from './Project'
-import { User } from '../user/User'
-import { ProjectRole } from '../../constants/ProjectRole'
+import { Project } from '@entities/project/Project'
+import { User } from '@entities/user/User'
+import { ProjectRole } from '@constants/ProjectRole'
 
 @Entity()
 @Unique(['user', 'project'])

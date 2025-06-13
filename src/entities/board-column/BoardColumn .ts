@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm'
-import { Project } from '../project/Project'
-import { Task } from '../task/Task'
+import { Project } from '@entities/project/Project'
+import { Task } from '@entities/task/Task'
 
 @Entity()
 @Unique(['project', 'order'])

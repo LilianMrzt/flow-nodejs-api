@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { getColumnsByProjectKey } from '../controllers/BoardColumnController'
-import { authenticateJWT } from '../middleware/authenticateJWT'
+import { getColumnsByProjectKey } from '@controllers/BoardColumnController'
+import { authenticateJWT } from '@middleware/authenticateJWT'
 
 const router = Router()
 
