@@ -4,8 +4,8 @@ import { authenticateJWT } from '../middleware/authenticateJWT'
 
 const router = express.Router()
 
-router.post('/auth/users', createUser as never)
-router.post('/auth/login', loginUser as never)
-router.get('/auth/me', authenticateJWT, getAuthenticatedUser as never)
+router.post('/auth/users', createUser)
+router.post('/auth/login', loginUser)
+router.get('/auth/me', authenticateJWT, getAuthenticatedUser)
 
 export default router
