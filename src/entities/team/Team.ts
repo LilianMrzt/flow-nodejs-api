@@ -24,6 +24,9 @@ export class Team {
     })
         projects!: Project[]
 
+    @Column({ unique: true })
+        joinCode!: string
+
     @CreateDateColumn()
         createdAt!: Date
 

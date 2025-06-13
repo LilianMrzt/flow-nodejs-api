@@ -10,6 +10,7 @@ import { Server } from 'socket.io'
 import http from 'http'
 import { WebSocketEvents } from '@constants/WebSocketEvents'
 import boardColumnsRoutes from '@routes/boardColumnsRoutes'
+import teamRoutes from '@routes/teamRoutes'
 
 const app: Application = express()
 
@@ -36,6 +37,7 @@ app.use('/api', userRoutes)
 app.use('/api', projectRoutes)
 app.use('/api', taskRoutes)
 app.use('/api', boardColumnsRoutes)
+app.use('/api', teamRoutes)
 
 io.on('connection', (socket) => {
     socket.on(WebSocketEvents.JOIN_PROJECT_ROOM, (projectId: string) => {

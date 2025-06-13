@@ -6,12 +6,13 @@ import { Response } from 'express'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { ResponseMessages } from '@constants/ResponseMessages'
 import { getTeamForUser } from '@services/user/UserService'
-import { BoardColumn } from '@entities/board-column/BoardColumn  '
+import { BoardColumn } from '@entities/board-column/BoardColumn'
 import { validateProjectKey } from '@services/project/ProjectService'
 import { Task } from '@entities/task/Task'
 import { getProjectSummaryDTO } from '@dtos/projects/ProjectSummaryDto'
 import { getProjectDetailsDTO } from '@dtos/projects/ProjectDetailsDto'
 import { getAuthenticatedUserService } from '@services/user/userAuthService'
+import { getProjectsForUserTeams } from '@services/project/projectAccessService'
 
 /**
  * Crée un nouveau projet et assigne l'utilisateur authentifié en tant qu'admin
@@ -125,20 +126,9 @@ export const getProjectsForUser = async (
         const limit = parseInt(req.query.limit as string) || 10
         const offset = parseInt(req.query.offset as string) || 0
 
-        const memberRepository = AppDataSource.getRepository(ProjectMember)
+        const projects = await getProjectsForUserTeams(user.id, { limit, offset })
 
-        const memberships = await memberRepository.find({
-            where: { user: { id: user.id } },
-            relations: ['project'],
-            skip: offset,
-            take: limit
-        })
-
-        const projects = memberships.map(m => {
-            return getProjectSummaryDTO(m.project)
-        })
-
-        res.status(200).json({ projects })
+        res.status(200).json({ projects: projects.map(getProjectSummaryDTO) })
     } catch (error) {
         console.error('Error fetching user projects:', error)
         res.status(400).json({ message: (error as Error).message || ResponseMessages.internalServerError })
@@ -157,24 +147,12 @@ export const getRecentProjectsForUser = async (
     try {
         const user = await getAuthenticatedUserService(req)
 
-        const memberRepository = AppDataSource.getRepository(ProjectMember)
-
-        const memberships = await memberRepository.find({
-            where: { user: { id:  user.id } },
-            relations: ['project'],
-            order: {
-                project: {
-                    updatedAt: 'DESC'
-                }
-            },
-            take: 4
+        const projects = await getProjectsForUserTeams(user.id, {
+            limit: 4,
+            orderByUpdatedAtDesc: true
         })
 
-        const projects = memberships.map(m => {
-            return getProjectSummaryDTO(m.project)
-        })
-
-        res.status(200).json({ projects })
+        res.status(200).json({ projects: projects.map(getProjectSummaryDTO) })
     } catch (error) {
         console.error('Error fetching recent projects:', error)
         res.status(500).json({ message: ResponseMessages.internalServerError })

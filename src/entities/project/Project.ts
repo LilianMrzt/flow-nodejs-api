@@ -9,7 +9,7 @@ import {
 } from 'typeorm'
 import { ProjectMember } from '@entities/project/ProjectMember'
 import { Team } from '@entities/team/Team'
-import { BoardColumn } from '@entities/board-column/BoardColumn '
+import { BoardColumn } from '@entities/board-column/BoardColumn'
 import { Task } from '@entities/task/Task'
 
 @Entity()

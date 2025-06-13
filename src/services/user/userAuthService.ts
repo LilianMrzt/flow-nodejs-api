@@ -9,8 +9,6 @@ import { LoginUserResult } from '@dtos/user/loginUserResult'
 import { isValidEmail, isValidPassword } from '@services/user/UserService'
 import { ResponseMessages } from '@constants/ResponseMessages'
 import { UserRegisterDto } from '@dtos/user/UserRegisterDto'
-import { Team } from '@entities/team/Team'
-import { TeamMember } from '@entities/team/TeamMember'
 
 /**
  * Vérifie les identifiants d’un administrateur et retourne un token JWT s’ils sont valides.
@@ -23,7 +21,8 @@ export const loginUserService = async (
     const repo = AppDataSource.getRepository(User)
 
     const user = await repo.findOne({
-        where: { email }
+        where: { email },
+        relations: ['memberships', 'memberships.team']
     })
 
     if (!user) {
@@ -102,18 +101,6 @@ export const registerUserService = async (dto: UserRegisterDto): Promise<User> =
     })
 
     await userRepository.save(newUser)
-
-    const team = new Team()
-    team.name = `${firstName || 'Default'}'s Team`
-
-    const member = new TeamMember()
-    member.user = newUser
-    member.role = 'admin'
-    member.team = team
-
-    team.members = [member]
-
-    await AppDataSource.getRepository(Team).save(team)
 
     return newUser
 }

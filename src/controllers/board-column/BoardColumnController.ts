@@ -1,6 +1,6 @@
 import { Response } from 'express'
 import { AppDataSource } from '@config/connectDatabase'
-import { BoardColumn } from '@entities/board-column/BoardColumn  '
+import { BoardColumn } from '@entities/board-column/BoardColumn'
 import { getBoardColumnDto } from '@dtos/board-column/BoardColumnDto'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { findProjectByKey } from '@services/task/TaskServices'
