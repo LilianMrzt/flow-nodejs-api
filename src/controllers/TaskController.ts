@@ -21,6 +21,7 @@ import { In } from 'typeorm'
 import { Project } from '../entities/project/Project'
 import { getTaskLightDto } from '../dtos/task/TaskLiteDto'
 import { getTaskDetailsDto } from '../dtos/task/TaskDetailsDto'
+import { getAuthenticatedUserService } from '../services/user/userAuthService'
 
 /**
  * Crée une tâche pour un projet
@@ -35,7 +36,7 @@ export const createTask = async (
         const { key } = req.params
         const { title, description, type, priority, columnId, assignedUser } = req.body
 
-        const reporter = await findUserById(req.user?.userId)
+        const reporter = await getAuthenticatedUserService(req)
         const projectRepo = AppDataSource.getRepository(Project)
         const project = await findProjectByKey(key)
 

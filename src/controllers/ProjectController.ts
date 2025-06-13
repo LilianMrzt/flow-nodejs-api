@@ -5,12 +5,13 @@ import { AppDataSource } from '../config/connectDatabase'
 import { Response } from 'express'
 import { AuthenticatedRequest } from '../middleware/authenticateJWT'
 import { ResponseMessages } from '../constants/ResponseMessages'
-import { findUserById, getTeamForUser } from '../services/user/UserService'
+import { getTeamForUser } from '../services/user/UserService'
 import { BoardColumn } from '../entities/board-column/BoardColumn '
 import { validateProjectKey } from '../services/project/ProjectService'
 import { Task } from '../entities/task/Task'
 import { getProjectSummaryDTO } from '../dtos/projects/ProjectSummaryDto'
 import { getProjectDetailsDTO } from '../dtos/projects/ProjectDetailsDto'
+import { getAuthenticatedUserService } from '../services/user/userAuthService'
 
 /**
  * Crée un nouveau projet et assigne l'utilisateur authentifié en tant qu'admin
@@ -24,7 +25,7 @@ export const createProject = async (
     try {
         const { name, description, key } = req.body
 
-        const user = await findUserById(req.user?.userId)
+        const user = await getAuthenticatedUserService(req)
         const team = await getTeamForUser(user)
 
         await validateProjectKey(key, team.id)
@@ -80,7 +81,7 @@ export const getProjectByKey = async (
 ): Promise<Response> => {
     try {
         const key = req.params.key
-        const user = await findUserById(req.user?.userId)
+        const user = await getAuthenticatedUserService(req)
         const team = await getTeamForUser(user)
 
         const project = await AppDataSource.getRepository(Project).findOne({
@@ -119,14 +120,14 @@ export const getProjectsForUser = async (
     res: Response
 ): Promise<Response> => {
     try {
-        const userId = req.user?.userId
+        const user = await getAuthenticatedUserService(req)
         const limit = parseInt(req.query.limit as string) || 10
         const offset = parseInt(req.query.offset as string) || 0
 
         const memberRepository = AppDataSource.getRepository(ProjectMember)
 
         const memberships = await memberRepository.find({
-            where: { user: { id: userId } },
+            where: { user: { id: user.id } },
             relations: ['project'],
             skip: offset,
             take: limit
@@ -153,12 +154,12 @@ export const getRecentProjectsForUser = async (
     res: Response
 ): Promise<Response> => {
     try {
-        const userId = req.user?.userId
+        const user = await getAuthenticatedUserService(req)
 
         const memberRepository = AppDataSource.getRepository(ProjectMember)
 
         const memberships = await memberRepository.find({
-            where: { user: { id: userId } },
+            where: { user: { id:  user.id } },
             relations: ['project'],
             order: {
                 project: {
@@ -191,7 +192,7 @@ export const deleteProject = async (
     try {
         const { id } = req.params
 
-        const user = await findUserById(req.user?.userId)
+        const user = await getAuthenticatedUserService(req)
         const team = await getTeamForUser(user)
 
         const projectRepo = AppDataSource.getRepository(Project)
@@ -229,7 +230,7 @@ export const updateProject = async (
         const { id } = req.params
         const { name, description, key } = req.body
 
-        const user = await findUserById(req.user?.userId)
+        const user = await getAuthenticatedUserService(req)
         const team = await getTeamForUser(user)
 
         const projectRepo = AppDataSource.getRepository(Project)
