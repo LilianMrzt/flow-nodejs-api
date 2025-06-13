@@ -6,7 +6,7 @@ import {
     reorderBacklogTasks,
     reorderColumnTasks,
     updateTask
-} from '@controllers/TaskController'
+} from '@controllers/task/TaskController'
 import { authenticateJWT } from '@middleware/authenticateJWT'
 
 const router = express.Router()

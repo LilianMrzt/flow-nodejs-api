@@ -1,5 +1,5 @@
 import express from 'express'
-import { createUser, getAuthenticatedUser, loginUser } from '@controllers/UserController'
+import { createUser, getAuthenticatedUser, loginUser } from '@controllers/user/UserController'
 import { authenticateJWT } from '@middleware/authenticateJWT'
 import {
     forgotPasswordController,
