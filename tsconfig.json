@@ -1,4 +1,5 @@
 {
+  "extends": "./tsconfig.paths.json",
   "compilerOptions": {
     "target": "ES6",
     "module": "commonjs",
@@ -9,8 +10,10 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "baseUrl": "./src"
   },
-  "include": ["src/**/*"],
+  "include": ["src", "src/types/env.d.ts"],
   "exclude": ["node_modules"]
 }
