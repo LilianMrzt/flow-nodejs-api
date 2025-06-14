@@ -5,12 +5,10 @@ import { Task } from '@entities/task/Task'
 import { Server } from 'socket.io'
 import { WebSocketEvents } from '@constants/WebSocketEvents'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
-import {
-    findProjectByKey,
-    prepareColumnTasksUpdate,
-    reorderTasksInColumn
-} from '@services/task/TaskServices'
+import { reorderTasksInColumnService } from '@services/task/reorderTasksInColumnService'
 import { getTaskLightDto } from '@dtos/task/TaskLiteDto'
+import { findProjectByKeyService } from '@services/project/findProjectByKeyService'
+import { prepareColumnTasksUpdateService } from '@services/task/prepareColumnTasksUpdateService'
 
 /**
  * Gère la réorganisation de l'ordre et des colonnes des éléments du tableau
@@ -25,16 +23,16 @@ export const reorderColumnTasksController = async (
         const { key } = req.params
         const { updates }: { updates: { id: string, columnId: string | null, orderInColumn: number }[] } = req.body
 
-        const project = await findProjectByKey(key)
+        const project = await findProjectByKeyService(key)
         const taskRepo = AppDataSource.getRepository(Task)
 
-        const { tasksToUpdate, columnsToReorder } = await prepareColumnTasksUpdate(updates, project.id)
+        const { tasksToUpdate, columnsToReorder } = await prepareColumnTasksUpdateService(updates, project.id)
         await taskRepo.save(tasksToUpdate)
 
         const reorderedTasks: Task[] = []
 
         for (const columnId of columnsToReorder) {
-            const reordered = await reorderTasksInColumn(project.id, columnId)
+            const reordered = await reorderTasksInColumnService(project.id, columnId)
             reorderedTasks.push(...reordered)
         }
 

@@ -5,9 +5,9 @@ import { Task } from '@entities/task/Task'
 import { Server } from 'socket.io'
 import { WebSocketEvents } from '@constants/WebSocketEvents'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
-import { findProjectByKey } from '@services/task/TaskServices'
 import { In } from 'typeorm'
 import { getTaskLightDto } from '@dtos/task/TaskLiteDto'
+import { findProjectByKeyService } from '@services/project/findProjectByKeyService'
 
 /**
  * Gère la réorganisation de l'ordre des éléments du backlog
@@ -22,7 +22,7 @@ export const reorderBacklogTasksController = async (
         const { key } = req.params
         const { updates }: { updates: { id: string, orderInBacklog: number }[] } = req.body
 
-        const project = await findProjectByKey(key)
+        const project = await findProjectByKeyService(key)
 
         for (const update of updates) {
             await AppDataSource.getRepository(Task).update(

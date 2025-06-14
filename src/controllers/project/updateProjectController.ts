@@ -3,10 +3,10 @@ import { AppDataSource } from '@config/connectDatabase'
 import { Response } from 'express'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { ResponseMessages } from '@constants/ResponseMessages'
-import { getTeamForUser } from '@services/user/UserService'
-import { validateProjectKey } from '@services/project/ProjectService'
+import { validateProjectKeyService } from '@services/project/validateProjectKeyService'
 import { Task } from '@entities/task/Task'
-import { getAuthenticatedUserService } from '@services/user/userAuthService'
+import { getAuthenticatedUserService } from '@services/user/auth/getAuthenticatedUserService'
+import { getTeamForUserService } from '@services/user/getTeamForUserService'
 
 /**
  * Met à jour les informations d'un projet
@@ -22,7 +22,7 @@ export const updateProjectController = async (
         const { name, description, key } = req.body
 
         const user = await getAuthenticatedUserService(req)
-        const team = await getTeamForUser(user)
+        const team = await getTeamForUserService(user)
 
         const projectRepo = AppDataSource.getRepository(Project)
 
@@ -37,7 +37,7 @@ export const updateProjectController = async (
         }
 
         if (key && key !== project.key) {
-            await validateProjectKey(key, team.id)
+            await validateProjectKeyService(key, team.id)
             project.key = key.toUpperCase()
 
             const taskRepo = AppDataSource.getRepository(Task)

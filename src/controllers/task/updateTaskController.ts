@@ -1,6 +1,5 @@
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { Response } from 'express'
-import { findBoardColumnById, findProjectByKey, findTaskByIdAndProject } from '@services/task/TaskServices'
 import { AppDataSource } from '@config/connectDatabase'
 import { Task } from '@entities/task/Task'
 import { Server } from 'socket.io'
@@ -8,6 +7,9 @@ import { WebSocketEvents } from '@constants/WebSocketEvents'
 import { getTaskLightDto } from '@dtos/task/TaskLiteDto'
 import { getTaskDetailsDto } from '@dtos/task/TaskDetailsDto'
 import { ResponseMessages } from '@constants/ResponseMessages'
+import { findProjectByKeyService } from '@services/project/findProjectByKeyService'
+import { findBoardColumnByIdService } from '@services/board-column/findBoardColumnByIdService'
+import {findTaskByIdAndProjectService} from "@services/task/findTaskByIdAndProjectService";
 
 /**
  * Met à jour une tache
@@ -27,11 +29,11 @@ export const updateTaskController = async (
             return
         }
 
-        const project = await findProjectByKey(key)
-        const task = await findTaskByIdAndProject(taskId, project.id)
+        const project = await findProjectByKeyService(key)
+        const task = await findTaskByIdAndProjectService(taskId, project.id)
 
         if (columnId !== undefined) {
-            task.column = columnId ? await findBoardColumnById(columnId) : null
+            task.column = columnId ? await findBoardColumnByIdService(columnId) : null
         }
         if (title !== undefined) task.title = title
         if (description !== undefined) task.description = description

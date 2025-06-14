@@ -3,8 +3,8 @@ import { AppDataSource } from '@config/connectDatabase'
 import { Response } from 'express'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { ResponseMessages } from '@constants/ResponseMessages'
-import { getTeamForUser } from '@services/user/UserService'
-import { getAuthenticatedUserService } from '@services/user/userAuthService'
+import { getAuthenticatedUserService } from '@services/user/auth/getAuthenticatedUserService'
+import { getTeamForUserService } from '@services/user/getTeamForUserService'
 
 /**
  * Supprime un projet par son ID (si l'utilisateur appartient à l'équipe)
@@ -19,7 +19,7 @@ export const deleteProjectController = async (
         const { id } = req.params
 
         const user = await getAuthenticatedUserService(req)
-        const team = await getTeamForUser(user)
+        const team = await getTeamForUserService(user)
 
         const projectRepo = AppDataSource.getRepository(Project)
 

@@ -1,11 +1,12 @@
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { Response } from 'express'
-import { findProjectByKey, findTaskByIdAndProject } from '@services/task/TaskServices'
 import { AppDataSource } from '@config/connectDatabase'
 import { Task } from '@entities/task/Task'
 import { ResponseMessages } from '@constants/ResponseMessages'
 import { Server } from 'socket.io'
 import { WebSocketEvents } from '@constants/WebSocketEvents'
+import { findProjectByKeyService } from '@services/project/findProjectByKeyService'
+import { findTaskByIdAndProjectService } from '@services/task/findTaskByIdAndProjectService'
 
 /**
  * Supprime une tâche d’un projet
@@ -19,8 +20,8 @@ export const deleteTaskController = async (
     try {
         const { key, taskId } = req.params
 
-        const project = await findProjectByKey(key)
-        const task = await findTaskByIdAndProject(taskId, project.id)
+        const project = await findProjectByKeyService(key)
+        const task = await findTaskByIdAndProjectService(taskId, project.id)
         const taskIdBeforeDeletion = task.id
 
         await AppDataSource.getRepository(Task).remove(task)

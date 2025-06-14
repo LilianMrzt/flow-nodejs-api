@@ -8,7 +8,7 @@ import { AppDataSource } from '@config/connectDatabase'
  * @param userId
  * @param options
  */
-export const getProjectsForUserTeams = async (
+export const getProjectsForUserTeamsService = async (
     userId: string,
     options?: {
         limit?: number

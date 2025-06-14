@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ForgotPasswordDto } from '@dtos/password-reset-token/ForgotPasswordDto'
-import { forgotPasswordService } from '@services/password-reset-token/passwordResetService'
+import { forgotPasswordService } from '@services/password-reset-token/forgotPasswordService'
 
 /**
  * Gère la demande de réinitialisation du mot de passe

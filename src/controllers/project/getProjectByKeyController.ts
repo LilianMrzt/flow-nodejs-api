@@ -3,9 +3,9 @@ import { AppDataSource } from '@config/connectDatabase'
 import { Response } from 'express'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { ResponseMessages } from '@constants/ResponseMessages'
-import { getTeamForUser } from '@services/user/UserService'
 import { getProjectDetailsDTO } from '@dtos/projects/ProjectDetailsDto'
-import { getAuthenticatedUserService } from '@services/user/userAuthService'
+import { getAuthenticatedUserService } from '@services/user/auth/getAuthenticatedUserService'
+import { getTeamForUserService } from '@services/user/getTeamForUserService'
 
 /**
  * Récupère un projet et ses membres par key
@@ -19,7 +19,7 @@ export const getProjectByKeyController = async (
     try {
         const key = req.params.key
         const user = await getAuthenticatedUserService(req)
-        const team = await getTeamForUser(user)
+        const team = await getTeamForUserService(user)
 
         const project = await AppDataSource.getRepository(Project).findOne({
             where: {

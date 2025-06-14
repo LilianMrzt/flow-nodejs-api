@@ -6,7 +6,7 @@ import { Project } from '@entities/project/Project'
  * @param key
  * @param teamId
  */
-export const validateProjectKey = async (key: string, teamId: string): Promise<void> => {
+export const validateProjectKeyService = async (key: string, teamId: string): Promise<void> => {
     if (!key || key.trim() === '') {
         throw new Error('Project key is required.')
     }

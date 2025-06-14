@@ -4,7 +4,7 @@ import { TeamMember } from '@entities/team/TeamMember'
 import { ResponseMessages } from '@constants/ResponseMessages'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { AppDataSource } from '@config/connectDatabase'
-import { getAuthenticatedUserService } from '@services/user/userAuthService'
+import { getAuthenticatedUserService } from '@services/user/auth/getAuthenticatedUserService'
 
 /**
  * Permet de rejoindre une team existante

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ResponseMessages } from '@constants/ResponseMessages'
-import { registerUserService } from '@services/user/userAuthService'
+import { registerUserService } from '@services/user/auth/registerUserService'
 import { UserRegisterDto } from '@dtos/user/UserRegisterDto'
 
 /**

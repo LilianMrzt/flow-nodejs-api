@@ -3,7 +3,7 @@ import { AppDataSource } from '@config/connectDatabase'
 import { BoardColumn } from '@entities/board-column/BoardColumn'
 import { getBoardColumnDto } from '@dtos/board-column/BoardColumnDto'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
-import { findProjectByKey } from '@services/task/TaskServices'
+import { findProjectByKeyService } from '@services/project/findProjectByKeyService'
 
 /**
  * Récupère les colonnes d'un projet
@@ -16,7 +16,7 @@ export const getColumnsByProjectKeyController = async (
 ): Promise<void> => {
     try {
         const { key } = req.params
-        const project = await findProjectByKey(key)
+        const project = await findProjectByKeyService(key)
 
         if (!project) {
             res.status(404).json({ message: 'Project not found' })

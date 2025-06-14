@@ -2,7 +2,7 @@ import { Response } from 'express'
 import { ResponseMessages } from '@constants/ResponseMessages'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { getAuthenticatedUserDTO } from '@dtos/user/AuthenticatedUserDto'
-import { getAuthenticatedUserService } from '@services/user/userAuthService'
+import { getAuthenticatedUserService } from '@services/user/auth/getAuthenticatedUserService'
 
 /**
  * Retourne les infos de l'utilisateur authentifié

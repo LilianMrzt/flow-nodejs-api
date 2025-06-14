@@ -1,10 +1,10 @@
 import { Response } from 'express'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
-import { findProjectByKey } from '@services/task/TaskServices'
 import { AppDataSource } from '@config/connectDatabase'
 import { Task } from '@entities/task/Task'
 import { getTaskLightDto } from '@dtos/task/TaskLiteDto'
 import { ResponseMessages } from '@constants/ResponseMessages'
+import { findProjectByKeyService } from '@services/project/findProjectByKeyService'
 
 /**
  * Récupère les tâches d'un projet
@@ -17,7 +17,7 @@ export const getTasksByProjectKeyController = async (
 ): Promise<void> => {
     try {
         const { key } = req.params
-        const project = await findProjectByKey(key)
+        const project = await findProjectByKeyService(key)
 
         const tasks = await AppDataSource.getRepository(Task).find({
             where: { project: { id: project.id } },

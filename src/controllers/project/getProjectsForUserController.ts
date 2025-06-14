@@ -2,8 +2,8 @@ import { Response } from 'express'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { ResponseMessages } from '@constants/ResponseMessages'
 import { getProjectSummaryDTO } from '@dtos/projects/ProjectSummaryDto'
-import { getAuthenticatedUserService } from '@services/user/userAuthService'
-import { getProjectsForUserTeams } from '@services/project/projectAccessService'
+import { getProjectsForUserTeamsService } from '@services/project/getProjectsForUserTeamsService'
+import { getAuthenticatedUserService } from '@services/user/auth/getAuthenticatedUserService'
 
 /**
  * Récupère tous les projets dans lesquels l'utilisateur authentifié est membre
@@ -19,7 +19,7 @@ export const getProjectsForUserController = async (
         const limit = parseInt(req.query.limit as string) || 10
         const offset = parseInt(req.query.offset as string) || 0
 
-        const projects = await getProjectsForUserTeams(user.id, { limit, offset })
+        const projects = await getProjectsForUserTeamsService(user.id, { limit, offset })
 
         res.status(200).json({ projects: projects.map(getProjectSummaryDTO) })
     } catch (error) {

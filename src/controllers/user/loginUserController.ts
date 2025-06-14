@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { UserLoginDto } from '@dtos/user/UserLoginDto'
-import { loginUserService } from '@services/user/userAuthService'
+import { loginUserService } from '@services/user/auth/loginUserService'
 
 /**
  * Service pour gérer la connexion à l'app

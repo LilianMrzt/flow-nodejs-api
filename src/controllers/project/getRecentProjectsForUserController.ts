@@ -2,8 +2,8 @@ import { Response } from 'express'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { ResponseMessages } from '@constants/ResponseMessages'
 import { getProjectSummaryDTO } from '@dtos/projects/ProjectSummaryDto'
-import { getAuthenticatedUserService } from '@services/user/userAuthService'
-import { getProjectsForUserTeams } from '@services/project/projectAccessService'
+import { getProjectsForUserTeamsService } from '@services/project/getProjectsForUserTeamsService'
+import { getAuthenticatedUserService } from '@services/user/auth/getAuthenticatedUserService'
 
 /**
  * Récupération des 4 projets les plus recemment modifiés
@@ -17,7 +17,7 @@ export const getRecentProjectsForUserController = async (
     try {
         const user = await getAuthenticatedUserService(req)
 
-        const projects = await getProjectsForUserTeams(user.id, {
+        const projects = await getProjectsForUserTeamsService(user.id, {
             limit: 4,
             orderByUpdatedAtDesc: true
         })

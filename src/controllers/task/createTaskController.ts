@@ -5,18 +5,14 @@ import { Task } from '@entities/task/Task'
 import { Server } from 'socket.io'
 import { WebSocketEvents } from '@constants/WebSocketEvents'
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
-import {
-    findUserById
-} from '@services/user/UserService'
-import {
-    findBoardColumnById,
-    findProjectByKey,
-    getNextOrderInBacklog,
-    getNextOrderInColumn
-} from '@services/task/TaskServices'
 import { Project } from '@entities/project/Project'
 import { getTaskDetailsDto } from '@dtos/task/TaskDetailsDto'
-import { getAuthenticatedUserService } from '@services/user/userAuthService'
+import { getAuthenticatedUserService } from '@services/user/auth/getAuthenticatedUserService'
+import { findUserByIdService } from '@services/user/findUserByIdService'
+import { findProjectByKeyService } from '@services/project/findProjectByKeyService'
+import { findBoardColumnByIdService } from '@services/board-column/findBoardColumnByIdService'
+import { getNextOrderInColumnService } from '@services/task/getNextOrderInColumnService'
+import { getNextOrderInBacklogService } from '@services/task/getNextOrderInBacklogService'
 
 /**
  * Crée une tâche pour un projet
@@ -33,7 +29,7 @@ export const createTaskController = async (
 
         const reporter = await getAuthenticatedUserService(req)
         const projectRepo = AppDataSource.getRepository(Project)
-        const project = await findProjectByKey(key)
+        const project = await findProjectByKeyService(key)
 
         project.totalTasksNumber += 1
         await projectRepo.save(project)
@@ -48,13 +44,13 @@ export const createTaskController = async (
         task.key = taskKey
         task.reporter = reporter
         task.project = project
-        task.column = columnId ? await findBoardColumnById(columnId) : null
-        task.assignedUser = assignedUser ? await findUserById(assignedUser) : null
-        task.orderInBacklog = await getNextOrderInBacklog(project.id)
+        task.column = columnId ? await findBoardColumnByIdService(columnId) : null
+        task.assignedUser = assignedUser ? await findUserByIdService(assignedUser) : null
+        task.orderInBacklog = await getNextOrderInBacklogService(project.id)
 
         if (columnId) {
-            task.column = await findBoardColumnById(columnId)
-            task.orderInColumn = await getNextOrderInColumn(columnId)
+            task.column = await findBoardColumnByIdService(columnId)
+            task.orderInColumn = await getNextOrderInColumnService(columnId)
         } else {
             task.column = null
             task.orderInColumn = null

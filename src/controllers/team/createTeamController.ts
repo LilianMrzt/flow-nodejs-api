@@ -1,11 +1,11 @@
 import { AuthenticatedRequest } from '@middleware/authenticateJWT'
 import { Response } from 'express'
-import { getAuthenticatedUserService } from '@services/user/userAuthService'
 import { AppDataSource } from '@config/connectDatabase'
 import { Team } from '@entities/team/Team'
 import { TeamMember } from '@entities/team/TeamMember'
 import { v4 as uuidv4 } from 'uuid'
 import { ResponseMessages } from '@constants/ResponseMessages'
+import { getAuthenticatedUserService } from '@services/user/auth/getAuthenticatedUserService'
 
 /**
  * Crée une team pour l'utilisateur

@@ -3,13 +3,13 @@ import { ProjectMember } from '@entities/project/ProjectMember'
 import { ProjectRole } from '@constants/ProjectRole'
 import { Response } from 'express'
 import { BoardColumn } from '@entities/board-column/BoardColumn'
-import { getAuthenticatedUserService } from '@services/user/userAuthService'
-import { getTeamForUser } from '@services/user/UserService'
-import { validateProjectKey } from '@services/project/ProjectService'
+import { validateProjectKeyService } from '@services/project/validateProjectKeyService'
 import { AppDataSource } from '@config/connectDatabase'
 import { ResponseMessages } from '@constants/ResponseMessages'
 import { getProjectSummaryDTO } from '@dtos/projects/ProjectSummaryDto'
 import { Project } from '@entities/project/Project'
+import { getAuthenticatedUserService } from '@services/user/auth/getAuthenticatedUserService'
+import { getTeamForUserService } from '@services/user/getTeamForUserService'
 
 /**
  * Crée un nouveau projet et assigne l'utilisateur authentifié en tant qu'admin
@@ -24,9 +24,9 @@ export const createProjectController = async (
         const { name, description, key } = req.body
 
         const user = await getAuthenticatedUserService(req)
-        const team = await getTeamForUser(user)
+        const team = await getTeamForUserService(user)
 
-        await validateProjectKey(key, team.id)
+        await validateProjectKeyService(key, team.id)
 
         const project = new Project()
         project.name = name
