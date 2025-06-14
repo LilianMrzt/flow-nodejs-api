@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { authenticateJWT } from '@middleware/authenticateJWT'
-import { createTeamController, joinTeamController } from '@controllers/team/teamController'
+import { joinTeamController } from '@controllers/team/joinTeamController'
+import { createTeamController } from '@controllers/team/createTeamController'
 
 const router = Router()
 

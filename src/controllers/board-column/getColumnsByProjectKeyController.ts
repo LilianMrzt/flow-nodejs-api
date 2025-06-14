@@ -10,7 +10,7 @@ import { findProjectByKey } from '@services/task/TaskServices'
  * @param req
  * @param res
  */
-export const getColumnsByProjectKey = async (
+export const getColumnsByProjectKeyController = async (
     req: AuthenticatedRequest,
     res: Response
 ): Promise<void> => {

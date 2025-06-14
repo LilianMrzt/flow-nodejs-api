@@ -1,22 +1,21 @@
 import express from 'express'
-import {
-    createTask,
-    deleteTask, getTaskByKey,
-    getTasksByProjectKey,
-    reorderBacklogTasks,
-    reorderColumnTasks,
-    updateTask
-} from '@controllers/task/TaskController'
+import { reorderColumnTasksController } from '@controllers/task/reorderColumnTasksController'
 import { authenticateJWT } from '@middleware/authenticateJWT'
+import { createTaskController } from '@controllers/task/createTaskController'
+import { reorderBacklogTasksController } from '@controllers/task/reorderBacklogTasksController'
+import { deleteTaskController } from '@controllers/task/deleteTaskController'
+import { updateTaskController } from '@controllers/task/updateTaskController'
+import { getTaskByKeyController } from '@controllers/task/getTaskByKeyController'
+import { getTasksByProjectKeyController } from '@controllers/task/getTasksByProjectKey'
 
 const router = express.Router()
 
-router.post('/projects/:key/tasks', authenticateJWT, createTask)
-router.delete('/projects/:key/tasks/:taskId', authenticateJWT, deleteTask)
-router.get('/projects/:key/tasks', authenticateJWT, getTasksByProjectKey)
-router.patch('/projects/:key/tasks/reorder-backlog', authenticateJWT, reorderBacklogTasks)
-router.patch('/projects/:key/tasks/reorder-column', authenticateJWT, reorderColumnTasks)
-router.patch('/projects/:key/tasks/:taskId', authenticateJWT, updateTask)
-router.get('/projects/:key/tasks/:taskKey', authenticateJWT, getTaskByKey)
+router.post('/projects/:key/tasks', authenticateJWT, createTaskController)
+router.delete('/projects/:key/tasks/:taskId', authenticateJWT, deleteTaskController)
+router.get('/projects/:key/tasks', authenticateJWT, getTasksByProjectKeyController)
+router.patch('/projects/:key/tasks/reorder-backlog', authenticateJWT, reorderBacklogTasksController)
+router.patch('/projects/:key/tasks/reorder-column', authenticateJWT, reorderColumnTasksController)
+router.patch('/projects/:key/tasks/:taskId', authenticateJWT, updateTaskController)
+router.get('/projects/:key/tasks/:taskKey', authenticateJWT, getTaskByKeyController)
 
 export default router
