@@ -31,6 +31,9 @@ export class User {
     } })
         color!: string
 
+    @Column({ default: 'local' })
+        authProvider!: 'local' | 'google'
+
     @CreateDateColumn()
         createdAt!: Date
 

@@ -40,7 +40,8 @@ export const registerUserService = async (
         email,
         password: hashedPassword,
         firstName,
-        lastName
+        lastName,
+        authProvider: 'local'
     })
 
     await userRepository.save(newUser)
