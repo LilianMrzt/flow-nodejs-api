@@ -7,12 +7,15 @@ import { resetPasswordController } from '@controllers/password-reset-token/reset
 import { createUserController } from '@controllers/user/createUserController'
 import { loginUserController } from '@controllers/user/loginUserController'
 import { googleLoginController } from '@controllers/user/googleLoginController'
+import { userVerificationController } from '@controllers/user/userVerificationController'
 
 const router = express.Router()
 
 router.post('/auth/users', createUserController)
 router.post('/auth/login', loginUserController)
 router.post('/auth/google', googleLoginController)
+router.get('/auth/verify-email', userVerificationController)
+
 router.get('/auth/me', authenticateJWT, getAuthenticatedUserController)
 router.post('/auth/forgot-password', forgotPasswordController)
 router.post('/auth/reset-password', resetPasswordController)

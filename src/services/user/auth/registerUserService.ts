@@ -5,6 +5,8 @@ import { isValidPasswordService } from '@services/user/isValidPasswordService'
 import { ResponseMessages } from '@constants/ResponseMessages'
 import { UserRegisterDto } from '@dtos/user/UserRegisterDto'
 import { isValidEmailService } from '@services/user/isValidEmailService'
+import crypto from 'crypto'
+import { sendUserVerificationEmail } from '@emails/templates/sendUserVerificationEmail'
 
 /**
  * Vérification des informations envoyées lors de la création d'un compte
@@ -36,15 +38,20 @@ export const registerUserService = async (
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
+    const emailVerificationToken = crypto.randomBytes(32).toString('hex')
+
     const newUser = userRepository.create({
         email,
         password: hashedPassword,
         firstName,
         lastName,
-        authProvider: 'local'
+        authProvider: 'local',
+        isEmailVerified: false,
+        emailVerificationToken
     })
 
     await userRepository.save(newUser)
+    await sendUserVerificationEmail(newUser)
 
     return newUser
 }

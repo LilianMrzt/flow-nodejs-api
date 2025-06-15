@@ -1,10 +1,10 @@
 import { AppDataSource } from '@config/connectDatabase'
 import { User } from '@entities/user/User'
-import { v4 as uuidv4 } from 'uuid'
 import { ForgotPasswordDto } from '@dtos/password-reset-token/ForgotPasswordDto'
 import { PasswordResetToken } from '@entities/password-reset-token/PasswordResetToken'
 import process from 'process'
-import { sendResetPasswordEmail } from '@emails/templates/ResetPasswordEmailTemplate'
+import { sendResetPasswordEmail } from '@emails/templates/sendResetPasswordEmail'
+import crypto from 'crypto'
 
 const PASSWORD_RESET_EXPIRATION_MINUTES = 15
 
@@ -23,10 +23,14 @@ export const forgotPasswordService = async (
     })
     if (!user) return
 
-    const token = uuidv4()
+    const token = crypto.randomBytes(32).toString('hex')
     const expiresAt = new Date(Date.now() + PASSWORD_RESET_EXPIRATION_MINUTES * 60000)
 
-    const resetToken = tokenRepo.create({ user, token, expiresAt })
+    const resetToken = tokenRepo.create({
+        user,
+        token,
+        expiresAt
+    })
     await tokenRepo.save(resetToken)
 
     const resetUrl = `${process.env.REACT_APP_FRONT_BASE_URL}/auth/reset-password?token=${token}`

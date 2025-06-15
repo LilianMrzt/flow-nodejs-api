@@ -34,6 +34,12 @@ export class User {
     @Column({ default: 'local' })
         authProvider!: 'local' | 'google'
 
+    @Column({ default: false })
+        isEmailVerified!: boolean
+
+    @Column({ type: 'text', nullable: true })
+        emailVerificationToken!: string | null
+
     @CreateDateColumn()
         createdAt!: Date
 

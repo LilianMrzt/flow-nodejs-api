@@ -6,10 +6,11 @@ export const ResponseMessages = {
     passwordsDoNotMatch: 'Passwords do not match.',
     userCreated: 'User account successfully created.',
     internalServerError: 'An internal server error occurred. Please try again later.',
-    invalidCredentials: 'Invalid email or password.',
+    invalidCredentials: 'Invalid credentials.',
     loginSuccess: 'Login successful.',
     missingOrInvalidToken: 'Missing or invalid authentication token.',
     invalidOrExpiredToken: 'Invalid or expired token.',
+    emailNotVerified: 'Email has not been verified. Please check your email address to verify your account.',
 
     // Projets
     userNotFound: 'User not found.',

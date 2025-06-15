@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt'
 import { generateUserToken } from '@utils/jwt'
 import { getAuthenticatedUserDTO } from '@dtos/user/AuthenticatedUserDto'
 import { LoginUserResult } from '@dtos/user/loginUserResult'
+import { ResponseMessages } from '@constants/ResponseMessages'
 
 /**
  * Vérifie les identifiants d’un administrateur et retourne un token JWT s’ils sont valides.
@@ -22,13 +23,17 @@ export const loginUserService = async (
     })
 
     if (!user) {
-        throw new Error('Invalid credentials.')
+        throw new Error(ResponseMessages.invalidCredentials)
+    }
+
+    if (!user.isEmailVerified) {
+        throw new Error(ResponseMessages.emailNotVerified)
     }
 
     const match = await bcrypt.compare(password, user.password)
 
     if (!match) {
-        throw new Error('Invalid credentials.')
+        throw new Error(ResponseMessages.invalidCredentials)
     }
 
     const token = generateUserToken({
